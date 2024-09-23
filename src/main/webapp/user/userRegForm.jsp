@@ -39,7 +39,7 @@
                     <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="사용자 이메일" maxlength="30" required>
                 </div>
                 <div class="form-group mb-3">
-	                <label for="userBirthDay" class="form-label">사용자 생일</label>
+	                <label for="userBirthDay" class="form-label">사용자 생년월일</label>
 	                <input type="date" class="form-control" id="userBirthDay" name="userBirthDay" required>
                 </div>
                 <input type="hidden" id="userPwd" name="userPwd" value="">

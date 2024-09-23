@@ -9,8 +9,8 @@
 
 <script>
 $(document).ready(function() {
+    // 음식점 게시판 버튼 클릭 이벤트
     $("#btnStoreList_Write").on("click", function() {
-        alert("테스트 맛집 버튼이 클릭되었습니다!"); // 테스트용 알림 추가
         location.href = "/board/storeWrite.jsp";
     });
 });
@@ -32,7 +32,9 @@ $(document).ready(function() {
         <!-- 자유 게시판 카드 -->
         <div class="col-md-12"> <!-- 12로 변경하여 전체 너비 사용 -->
             <div class="card text-white bg-info mb-3">
-              <div class="card-header"><h2>맛집 게시판</h2></div>
+              <div class="card-header">
+                <h2>음식점 게시판</h2>
+              </div>
               <div class="card-body d-flex flex-column">
                 <table class="table table-info">
                   <thead>
@@ -94,7 +96,7 @@ $(document).ready(function() {
                        <li class="ms-auto">
                            <button type="button" id="btnStoreList_Write" class="btn btn-outline-light d-flex align-items-center">
                                <i class="fa-sharp-duotone fa-solid fa-pen me-1"></i>
-                               <span>글쓰기</span>
+                               <span>음식점 글쓰기</span>
                            </button>
                        </li>
                    </ul>

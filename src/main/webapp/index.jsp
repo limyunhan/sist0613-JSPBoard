@@ -3,6 +3,19 @@
 <html>
 <head>
 <%@ include file="/include/header.jsp" %>
+
+<script>
+$(document).ready(function(){
+   $("#btnFree").on("click", function(){
+       location.href = "/board/freeList.jsp";
+       });
+   
+   $("#btnStore").on("click", function(){
+       location.href = "/board/storeList.jsp";
+       });
+});
+</script>
+
 <style>
     .card-header h2 {
         margin: 0;
@@ -106,7 +119,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-end mt-auto">
-                        <button type="button" class="btn btn-outline-light btn-sm">전체보기</button>
+                        <button type="button" id="btnFree" class="btn btn-outline-light btn-sm">전체보기</button>
                     </div>
                 </div>
             </div>
@@ -154,7 +167,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-end mt-auto">
-                        <button type="button" class="btn btn-outline-light btn-sm">전체보기</button>
+                        <button type="button" id="btnStore" class="btn btn-outline-light btn-sm">전체보기</button>
                     </div>
                 </div>
             </div>

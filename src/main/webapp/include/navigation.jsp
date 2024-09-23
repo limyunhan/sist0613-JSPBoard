@@ -8,7 +8,12 @@ $(document).ready(function(){
 		$("#loginModal").on("show.bs.modal", function () {
 			$("#userId").focus(); 
 		});
+		
+	$("#updateForm").on("click", function() {
+		location.href = "/user/userUpdateForm.jsp";
+		});
 	});
+	
 	<% if (!request.getRequestURI().contains("userRegForm.jsp")) { %>
 	$("#regForm").on("click", function(){
 		location.href = "/user/userRegForm.jsp";
@@ -25,8 +30,8 @@ $(document).ready(function(){
         </button>
         <div class="collapse navbar-collapse" id="navbarColor01">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link active text-white fs-7" href=""><i class="fa-solid fa-list"></i> 자유 게시판</a></li>
-                <li class="nav-item"><a class="nav-link text-white fs-7" href=""><i class="fa-solid fa-list-check"></i> 음식점 게시판</a></li>
+                <li class="nav-item"><a class="nav-link active text-white fs-7" href="/board/freeList.jsp"><i class="fa-solid fa-list"></i> 자유 게시판</a></li>
+                <li class="nav-item"><a class="nav-link text-white fs-7" href="/board/storeList.jsp"><i class="fa-solid fa-list-check"></i> 음식점 게시판</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white fs-7" data-bs-toggle="dropdown" href="" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-sitemap"></i> 사이트맵</a>
                     <div class="dropdown-menu">
@@ -43,7 +48,7 @@ $(document).ready(function(){
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
                 <% } else { %>
                     <!-- 로그인이 되어 있을 경우 -->
-                    <button type="button" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원정보수정</button> 
+                    <button type="button" id="updateForm" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원정보수정</button> 
                     <button type="button" class="btn btn-outline-primary">로그아웃</button>
                 <% } 
                 } %>
