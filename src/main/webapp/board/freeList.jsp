@@ -60,22 +60,39 @@ $(document).ready(function(){
                     <!-- 나머지 7개의 게시글 추가 -->
                   </tbody>
                 </table>
-                <div class="d-flex justify-content-start mt-auto">
-                  <button type="button" id="btnFreeListWrite" class="btn btn-outline-light"><i class="fa-sharp-duotone fa-solid fa-pen"></i> 글쓰기</button>
-                </div>
-              </div>
-              <div class="card-footer">
-              	<div>
-				  <ul class="pagination">
-				    <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
-				    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-				    <li class="page-item"><a class="page-link" href="#">2</a></li>
-				    <li class="page-item"><a class="page-link" href="#">3</a></li>
-				    <li class="page-item"><a class="page-link" href="#">4</a></li>
-				    <li class="page-item"><a class="page-link" href="#">5</a></li>
-				    <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-				  </ul>
-              	</div>
+               <div>
+                   <ul class="pagination d-flex justify-content-between align-items-center mb-0" style="font-size: 1rem; width: 100%;">
+                       <li class="page-item disabled">
+                           <a class="page-link" href="#">&laquo;</a>
+                       </li>
+                       <div class="d-flex justify-content-center flex-grow-1">
+                           <li class="page-item active">
+                               <a class="page-link" href="#">1</a>
+                           </li>
+                           <li class="page-item">
+                               <a class="page-link" href="#">2</a>
+                           </li>
+                           <li class="page-item">
+                               <a class="page-link" href="#">3</a>
+                           </li>
+                           <li class="page-item">
+                               <a class="page-link" href="#">4</a>
+                           </li>
+                           <li class="page-item">
+                               <a class="page-link" href="#">5</a>
+                           </li>
+                       </div>
+                       <li class="page-item">
+                           <a class="page-link" href="#">&raquo;</a>
+                       </li>
+                       <li class="ms-auto">
+                           <button type="button" id="btnFreeListWrite" class="btn btn-outline-light d-flex align-items-center">
+                               <i class="fa-sharp-duotone fa-solid fa-pen me-1"></i>
+                               <span>자유 글쓰기</span>
+                           </button>
+                       </li>
+                   </ul>
+               </div>
               </div>
             </div>
         </div>
