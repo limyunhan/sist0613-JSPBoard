@@ -5,7 +5,11 @@
 <head>
 <%@ include file="/include/header.jsp" %>
 <script>
-    // 필요 시 JavaScript 코드 추가
+$(document).ready(function(){
+	   $("#btnFreeListWrite").on("click", function(){
+	       location.href = "/board/freeWrite.jsp";
+	       });
+	});
 </script>
 </head>
 <body>

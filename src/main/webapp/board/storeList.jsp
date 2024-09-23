@@ -10,8 +10,7 @@
 <script>
 $(document).ready(function() {
     $("#btnFoodList_Write").on("click", function() {
-        alert("테스트 맛집 버튼이 클릭되었습니다!"); // 테스트용 알림 추가
-        location.href = "/board/foodWrite.jsp";
+        location.href = "/board/storeWrite.jsp";
     });
 });
 </script>
