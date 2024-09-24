@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sist.common.util.StringUtil;
 import com.sist.web.db.DBManager;
 import com.sist.web.model.User;
 
@@ -17,8 +18,8 @@ public class UserDao {
 	public static Logger getLogger() {return logger;}
 	public static void setLogger(Logger logger) {UserDao.logger = logger;}
 	
-	// 유저 조회
-	public static User userSelect(String userId) {
+	// 유저 정보 조회
+	public User userSelect(String userId) {
 		User user = null;
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -58,6 +59,43 @@ public class UserDao {
 		
 		
 		return user;
+	}
+	
+	// 유저 아이디 조회
+	public String userIdSearch(String userName, String userEmail) {
+		String userId = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT NVL(USER_ID, '') USER_ID")
+		  .append("FROM USERS ")
+		  .append("WHERE USER_NAME = ? AND ") 
+		  .append("USER_EMAIL = ?");
+		
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setString(1, userName);
+			ps.setString(2, userEmail);
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				userId = rs.getString("USER_ID");
+			}
+		} catch (SQLException e) {
+			logger.error("[UserDao]userSelect SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+		
+		return userId;
+	}
+	
+	// 유저 비밀번호 조회
+	public boolean userPwdSearch(String userName, String userEmail, String userId) {
+		return StringUtil.equals(userIdSearch(userName, userEmail), userId);
 	}
 	
 	// 유저 회원가입
@@ -120,6 +158,35 @@ public class UserDao {
 		return (cnt > 0) ? true : false;
 	}
 	
+	// 유저 이메일 중복검사
+	public boolean userEmailIsDuplicated(String userEmail) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT(USER_ID) CNT ") 
+		  .append("FROM USERS ")
+		  .append("WHERE USER_EMAIL = ?");
+		
+		int cnt = 0;
+		
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setString(1, userEmail);
+			rs = ps.executeQuery();
+			rs.next();
+			cnt = rs.getInt("CNT");
+		} catch (SQLException e) {
+			logger.error("[UserDao]userEmailIsDuplicated SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+
+		return (cnt > 0) ? true : false;
+	}
+	
 	// 유저 정보 업데이트
 	public boolean userUpdate(User user) {
 		Connection conn = null;
@@ -152,7 +219,7 @@ public class UserDao {
 		return (cnt == 1) ? true : false;
 	}
 	
-	// 유저 회원 탈퇴('Y'를 'N으로 변경)
+	// 유저 회원 탈퇴('Y'를 'N'으로 변경)
 	public boolean userCancel(String userId) {
 		Connection conn = null;
 		PreparedStatement ps = null;

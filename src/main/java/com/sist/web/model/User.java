@@ -1,6 +1,12 @@
 package com.sist.web.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String userId;
 	private String userPwd;
 	private String userName;

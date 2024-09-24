@@ -14,7 +14,7 @@ $(document).ready(function(){
 		});
 	});
 	
-	<% if (!request.getRequestURI().contains("userRegForm.jsp")) { %>
+	<% if (!request.getRequestURI().contains("user")) { %>
 	$("#regForm").on("click", function(){
 		location.href = "/user/userRegForm.jsp";
    	});
@@ -41,7 +41,7 @@ $(document).ready(function(){
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                <% if (!request.getRequestURI().contains("userRegForm.jsp")) {
+                <% if (!request.getRequestURI().contains("user")) {
                 	if (StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) { %>
                     <!-- 로그인이 안 되어 있을 경우 -->
                     <button type="button" id="regForm" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원가입</button> 
@@ -58,7 +58,7 @@ $(document).ready(function(){
 </nav>
 
 <%-- 로그인 모달을 회원가입 페이지에서 제외 --%>
-<% if (!request.getRequestURI().contains("userRegForm.jsp")) { %>
+<% if (!request.getRequestURI().contains("user")) { %>
 <!-- 모달 구조 -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
