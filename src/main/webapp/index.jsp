@@ -4,6 +4,10 @@
 <head>
 <%@ include file="/include/header.jsp" %>
 
+<%
+	String cpIdSchYn = (String)session.getAttribute("idSchYn");
+	session.removeAttribute("idSchYn");
+%>
 <script>
 $(document).ready(function(){
    $("#btnFree").on("click", function(){
@@ -13,7 +17,13 @@ $(document).ready(function(){
    $("#btnStore").on("click", function(){
        location.href = "/board/storeList.jsp";
        });
+   
+   
+   <% if(cpIdSchYn != null && "1".equals(cpIdSchYn)) { %>
+  			 showModal();
+   <% } %>
 });
+
 </script>
 
 <style>
@@ -46,7 +56,6 @@ $(document).ready(function(){
 </head>
 <body>
 <%@ include file="/include/navigation.jsp" %>
-
 <div class="container mt-4">
     <div class="row">
         <!-- 공지사항 카드 -->

@@ -93,7 +93,7 @@
                   <li class="ms-auto">
                     <button type="button" id="btnStoreList_Write" class="btn btn-outline-light d-flex align-items-center">
                       <i class="fa-sharp-duotone fa-solid fa-pen me-1"></i>
-                      <span>자유 글쓰기</span>
+                      <span>음식점 글쓰기</span>
                     </button>
                   </li>
                 </ul>

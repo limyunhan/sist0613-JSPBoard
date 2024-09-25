@@ -13,13 +13,12 @@
   </script>
 </head>
 <body>
-
   <%@ include file="/include/navigation.jsp" %>
   <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 40px;">
     <input type="text" name="_searchValue" id="_searchValue" value="" 
            class="form-control mx-1" maxlength="20" 
            style="flex: 1; max-width: 800px; ime-mode: active; margin-right: 10px; width: 800px;" 
-           placeholder="검색." />
+           placeholder="검색" />
     <button type="button" id="btnSearch" style="margin-top: 10px;" class="btn btn-outline-light mb-3 mx-1">검색</button>
   </div>
   

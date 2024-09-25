@@ -6,7 +6,7 @@ response.setHeader("Pragma", "no-cache");
 response.setDateHeader("Expires", (long) 0);
 
 if (request.getProtocol().equals("HTTP/1.1")) {
-	response.setHeader("Cache-Control", "no-cache");
+   response.setHeader("Cache-Control", "no-cache");
 }
 %>
 <meta charset="UTF-8">
@@ -19,6 +19,9 @@ if (request.getProtocol().equals("HTTP/1.1")) {
 <link rel="stylesheet" href="/resources/css/custom.css"type="text/css">
 <script type="text/javascript" src="/resources/js/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     @font-face {
         font-family: "GmarketSans";

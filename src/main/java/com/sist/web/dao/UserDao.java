@@ -30,10 +30,10 @@ public class UserDao {
 		  .append("NVL(USER_NAME, '') USER_NAME, ")
 		  .append("NVL(USER_EMAIL, '') USER_EMAIL, ")
 		  .append("NVL(USER_BIRTHDAY, '') USER_BIRTHDAY, ")
-		  .append("NVL(USER_STATUS, 'N') USER_STATUS ")
+		  .append("NVL(USER_STATUS, 'N') USER_STATUS, ")
 		  .append("NVL(TO_CHAR(REG_DATE, 'YYYYMMDD HH24:MI:SS'), '') REG_DATE ")
 		  .append("FROM USERS ")
-		  .append("WHERE USER_ID = ?");
+		  .append("WHERE USER_ID = ? ");
 		
 		try {
 			conn = DBManager.getConnection();
@@ -69,10 +69,10 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT NVL(USER_ID, '') USER_ID")
+		sb.append("SELECT NVL(USER_ID, '') USER_ID ")
 		  .append("FROM USERS ")
 		  .append("WHERE USER_NAME = ? AND ") 
-		  .append("USER_EMAIL = ?");
+		  .append("USER_EMAIL = ? ");
 		
 		try {
 			conn = DBManager.getConnection();
@@ -147,15 +147,17 @@ public class UserDao {
 			ps = conn.prepareStatement(sb.toString());
 			ps.setString(1, userId);
 			rs = ps.executeQuery();
-			rs.next();
-			cnt = rs.getInt("CNT");
+			if(rs.next())
+			{
+				cnt = rs.getInt("CNT");
+			}
 		} catch (SQLException e) {
 			logger.error("[UserDao]userIdIsDuplicated SQLException", e);
 		} finally {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt > 0) ? true : false;
+		return (cnt <= 0) ? true : false;
 	}
 	
 	// 유저 이메일 중복검사
@@ -167,7 +169,7 @@ public class UserDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT COUNT(USER_ID) CNT ") 
 		  .append("FROM USERS ")
-		  .append("WHERE USER_EMAIL = ?");
+		  .append("WHERE USER_EMAIL = ? ");
 		
 		int cnt = 0;
 		
@@ -176,15 +178,17 @@ public class UserDao {
 			ps = conn.prepareStatement(sb.toString());
 			ps.setString(1, userEmail);
 			rs = ps.executeQuery();
-			rs.next();
+			if(rs.next())
+			{
 			cnt = rs.getInt("CNT");
+			}
 		} catch (SQLException e) {
 			logger.error("[UserDao]userEmailIsDuplicated SQLException", e);
 		} finally {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt > 0) ? true : false;
+		return (cnt <= 0) ? true : false;
 	}
 	
 	// 유저 정보 업데이트
