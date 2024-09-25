@@ -208,6 +208,7 @@ public class FreeBbsDao {
 		
 		return freeBbs;
 	}
+	
 	// 자유 게시글 작성전 SEQ 값 가져오기
 	public long nextFreeBbsSeq(Connection conn) {
 		long freeBbsSeq = 0;
@@ -236,11 +237,136 @@ public class FreeBbsDao {
 		long freeBbsSeq = 0;
 		Connection conn = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("INSERT INTO FREE_BBS(FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_STATUS, REG_DATE) ") 
+		  .append("VALUES (?, ?, ?, ?, 0, 0, 'Y', SYSDATE)");
+		
+		int cnt = 0;
+		
+		try {
+			conn = DBManager.getConnection();
+			freeBbsSeq = nextFreeBbsSeq(conn);
+			ps = conn.prepareStatement(sb.toString());
+			
+			int idx = 0;
+			ps.setLong(++idx, freeBbsSeq);
+			ps.setString(++idx, freeBbs.getUserId());
+			ps.setString(++idx, freeBbs.getFreeBbsTitle());
+			ps.setString(++idx, freeBbs.getFreeBbsContent());
+			
+			cnt = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]freeBbsInsert SQLException", e);
+		} finally {
+			DBManager.close(ps, conn);
+		}
+		
+		return (cnt == 1) ? true : false;
+	}
+	
+	// 자유 게시글 수정 1 : 게시글 수정
+	public boolean freeBbsUpdate(FreeBbs freeBbs) {
+		Connection conn = null;
+		PreparedStatement ps = null;
 		
 		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE FREE_BBS ")
+		  .append("SET BBS_TITLE = ?, BBS_CONTENT = ?, UPDATE_DATE = SYSDATE ")
+		  .append("WHERE FREE_BBS_SEQ = ?");
 		
+		int cnt = 0;
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			
+			int idx = 0;
+			ps.setString(++idx, freeBbs.getFreeBbsTitle());
+			ps.setString(++idx, freeBbs.getFreeBbsContent());
+			ps.setLong(++idx, freeBbs.getFreeBbsSeq());
+			cnt = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]", e);
+		} finally {
+			DBManager.close(ps, conn);
+		}
 		
-		return false;
+		return (cnt == 1) ? true : false;
+		
 	}
+	
+	// 자유 게시글 수정 2 : 게시글 조회수 증가 
+	public boolean freeBbsReadCntPlus(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE FREE_BBS ")
+		  .append("SET FREE_BBS_READ_CNT = FREE_BBS_READ_CNT + 1")
+		  .append("WHERE FREE_BBS_SEQ = ?");
+		
+		int cnt = 0;
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsSeq);
+			cnt = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]", e);
+		} finally {
+			DBManager.close(ps, conn);
+		}
+		
+		return (cnt == 1) ? true : false;
+	}
+	
+	// 자유 게시글 수정 3 : 게시글 추천수 증가 
+	public boolean freeBbsRecomCntPlus(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE FREE_BBS ")
+		  .append("SET FREE_BBS_RECOM_CNT = FREE_BBS_RECOM_CNT + 1 ")
+		  .append("WHERE FREE_BBS_SEQ = ? ");
+		
+		int cnt = 0;
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsSeq);
+			cnt = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]", e);
+		} finally {
+			DBManager.close(ps, conn);
+		}
+		
+		return (cnt == 1) ? true : false;
+	}
+	
+	// 자유 게시글 수정 4 : 게시글 삭제('N'으로 변경)
+	public boolean freeBbsDelete(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE FREE_BBS ")
+		  .append("SET FREE_BBS_STATUS = 'N' ")
+		  .append("WHERE FREE_BBS_SEQ = ?");
+		
+		int cnt = 0;
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsSeq);
+			cnt = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]", e);
+		} finally {
+			DBManager.close(ps, conn);
+		}
+		
+		return (cnt == 1) ? true : false;
+	}	
 }
