@@ -5,14 +5,12 @@
 <%@ page import="com.sist.web.util.HttpUtil" %>
 
 <%
-   Logger logger = LogManager.getLogger("loginOut.jsp");
-   HttpUtil.requestLogString(request, logger);
+Logger logger = LogManager.getLogger("loginOut.jsp");
+HttpUtil.requestLogString(request, logger);
 
-   //쿠키가 있을 경우에 삭제
-   if(CookieUtil.getCookie(request, "USER_ID") != null)
-   {
-      CookieUtil.deleteCookie(request, response, "USER_ID");
-   }
+if(CookieUtil.getCookie(request, "USER_ID") != null) {
+   CookieUtil.deleteCookie(request, response, "USER_ID");
+}
 
-   response.sendRedirect("/");
+response.sendRedirect("/");
 %>

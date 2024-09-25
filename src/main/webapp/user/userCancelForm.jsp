@@ -3,12 +3,10 @@
 <html>
 <head>
 <%@ include file="/include/header.jsp"%>
-<meta charset="UTF-8">
-<title>Insert title here</title>
 <script>
 $(document).ready(function(){
    $("#btnWithDraw").on("click",function(){
-      var idPwCheck = /^[a-zA-Z0-9]{4,12}$/;
+      var idPwdCheck = /^[a-zA-Z0-9]{4,12}$/;
       var emptCheck = /\s/g;
       var userWd = "예";
       
@@ -27,7 +25,7 @@ $(document).ready(function(){
          return;
       }
       
-      if(!idPwCheck.test($("#userPwd1").val()))
+      if(!idPwdCheck.test($("#userPwd1").val()))
       {
          alert("비밀번호는 영문대소문자, 숫자로만 이루어진 4~12자리로만 입력가능합니다.");
          $("#userPwd1").focus();
@@ -98,8 +96,6 @@ $(document).ready(function(){
                 </div>
                 <input type="hidden" id="userPwd" name="userPwd" value="">
                 <div class="d-flex justify-content-end mt-4">
-                <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
                     <button type="button" id="btnWithDraw" class="btn btn-outline-primary" style="background-color: #3f51b5;">탈퇴</button>
                 </div>
             </form>

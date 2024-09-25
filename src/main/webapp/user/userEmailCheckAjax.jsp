@@ -14,14 +14,13 @@ Logger logger = LogManager.getLogger("userEmailCheckAjax.jsp");
 HttpUtil.requestLogString(request, logger);
 
 String userEmail = HttpUtil.get(request, "userEmail");
-if (StringUtil.isEmpty(userEmail)) {
-	response.getWriter().write("{\"flag\":0}");
-} else if (!StringUtil.isEmpty(userEmail)) {
+
+if (!StringUtil.isEmpty(userEmail)) {
 	UserDao userDao = new UserDao();
 	if (userDao.userEmailIsDuplicated(userEmail)) {
-		response.getWriter().write("{\"flag\":1}");
+		response.getWriter().write("{\"flag\":0}");
 	} else {
-		response.getWriter().write("{\"flag\":2}");
+		response.getWriter().write("{\"flag\":1}");
 	}
 } else {
 	response.getWriter().write("{\"flag\":-1}");

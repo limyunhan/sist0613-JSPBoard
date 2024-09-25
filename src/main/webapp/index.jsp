@@ -9,21 +9,20 @@
 	session.removeAttribute("idSchYn");
 %>
 <script>
-$(document).ready(function(){
-   $("#btnFree").on("click", function(){
-       location.href = "/board/freeList.jsp";
-       });
-   
-   $("#btnStore").on("click", function(){
-       location.href = "/board/storeList.jsp";
-       });
-   
-   
-   <% if(cpIdSchYn != null && "1".equals(cpIdSchYn)) { %>
-  			 showModal();
-   <% } %>
-});
-
+	$(document).ready(function(){
+	   $("#btnFree").on("click", function(){
+	       location.href = "/board/freeList.jsp";
+	       });
+	   
+	   $("#btnStore").on("click", function(){
+	       location.href = "/board/storeList.jsp";
+	       });
+	   
+	   
+	   <% if(cpIdSchYn != null && "1".equals(cpIdSchYn)) { %>
+	  			 showModal();
+	   <% } %>
+	});
 </script>
 
 <style>

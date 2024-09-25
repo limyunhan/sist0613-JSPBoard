@@ -94,8 +94,12 @@ public class UserDao {
 	}
 	
 	// 유저 비밀번호 조회
-	public boolean userPwdSearch(String userName, String userEmail, String userId) {
-		return StringUtil.equals(userIdSearch(userName, userEmail), userId);
+	public User userPwdSearch(String userName, String userEmail, String userId) {
+		User user = null;
+		if(StringUtil.equals(userIdSearch(userName, userEmail), userId)) {
+			user = userSelect(userId);
+		}
+		return user;
 	}
 	
 	// 유저 회원가입
@@ -157,7 +161,7 @@ public class UserDao {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt <= 0) ? true : false;
+		return (cnt != 0) ? true : false;
 	}
 	
 	// 유저 이메일 중복검사
@@ -188,7 +192,7 @@ public class UserDao {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt <= 0) ? true : false;
+		return (cnt != 0) ? true : false;
 	}
 	
 	// 유저 정보 업데이트
