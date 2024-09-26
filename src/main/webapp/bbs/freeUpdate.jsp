@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,7 +15,7 @@
 <div class="container">
    <br />
    <h2>자유 게시물 수정</h2>
-   <form name="updateForm" id="updateForm" action="/board/freeUpdateProc.jsp" method="post">
+   <form name="updateForm" id="updateForm" action="/bbs/freeUpdateProc.jsp" method="post">
       <input type="text" name="bbsName" id="bbsName" maxlength="20" value="" style="ime-mode:active;"class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요." readonly />
       <input type="text" name="bbsEmail" id="bbsEmail" maxlength="30" value=""  style="ime-mode:inactive;" class="form-control mb-2" placeholder="이메일을 입력해주세요." readonly />
       <input type="text" name="bbsTitle" id="bbsTitle" maxlength="100" style="ime-mode:active;" value="" class="form-control mb-2" placeholder="제목을 입력해주세요." required />

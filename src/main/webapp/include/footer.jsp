@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <div class="footer text-white bg-dark mt-4">
     <div class="container text-center py-4">
         <div class="mb-3">
@@ -11,7 +10,7 @@
             <div class="col-md-12">
                 <p class="small text-nowrap">상호: JSPBoard | 대표자명: 임윤한<br>
                 사업자등록번호: 000-00-00000 | 통신판매업신고번호: 제0000-서울마포-0000호<br>
-                연락처: 00-000-0000 | 팩스: 000-0000-0000 | 이메일: <a href="mailto:info@jspboard.com" class="text-white">info@jspboard.com</a><br>
+                연락처: 00-000-0000 | 팩스: 000-0000-0000 | 이메일: <a href="mailto:info@jspboard.com" class="text-white">info@jspboard.co.kr</a><br>
                 주소: 서울특별시 마포구 서교동 447-5 풍성빌딩 2층</p>
                 <p class="small">
                     <a href="" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-white">이용약관</a> | 

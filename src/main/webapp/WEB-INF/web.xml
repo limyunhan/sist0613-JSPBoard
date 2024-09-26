@@ -38,7 +38,7 @@
           <filter-class>com.sist.web.filter.UrlUserAuthFilter</filter-class>            
            <init-param>
                 <param-name>authUrl</param-name>
-                <param-value>/board</param-value> <!-- 콤마(,) 구분으로 여러개 등록가능 ex) /board,/user -->
+                <param-value>/bbs</param-value> <!-- 콤마(,) 구분으로 여러개 등록가능 ex) /board,/user -->
            </init-param>
     </filter>
     <!-- 사용자 인증 체크 Filter 종료 -->

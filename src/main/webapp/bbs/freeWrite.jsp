@@ -4,12 +4,12 @@
 <%@ page import="com.sist.common.util.StringUtil"%>
 <%@ page import="com.sist.web.util.CookieUtil"%>
 <%@ page import="com.sist.web.util.HttpUtil"%>
-<%@ page import="com.sist.web.model.User" %>
-<%@ page import="com.sist.web.dao.UserDao" %>
-
 <%
 Logger logger = LogManager.getLogger("freeWrite.jsp");
 HttpUtil.requestLogString(request, logger);
+
+String freeBbsTitle = StringUtil.nvl(HttpUtil.get(request, "freeBbsTitle"));
+String freeBbsContent = StringUtil.nvl(HttpUtil.get(request, "freeBbsContent"));
 %>
 <!DOCTYPE html>
 <html>
@@ -65,7 +65,7 @@ HttpUtil.requestLogString(request, logger);
 		});
 		
 		$("#btnWrite").on("click", function() {
-			if($.trim($("#freeBbsTitle").val()).length === 0) { 
+			if ($.trim($("#freeBbsTitle").val()).length === 0) { 
 				Swal.fire({
 					title: "제목을 입력해주세요.",
     			 	icon: "warning",
@@ -74,7 +74,7 @@ HttpUtil.requestLogString(request, logger);
 				    cancelButtonColor: "#3085d6",
 				    cancelButtonText: "확인"
     			});
-			} else if($.trim($("#freeBbsContent").val()).length === 0) {
+			} else if ($.trim($("#freeBbsContent").val()).length === 0) {
 				Swal.fire({
 					title:"내용을 입력해주세요.",
 					icon: "warning",
@@ -83,22 +83,22 @@ HttpUtil.requestLogString(request, logger);
 				    cancelButtonColor: "#3085d6",
 				    cancelButtonText: "확인"
 				});
-    	 } else {
-             Swal.fire({
-                title: "게시글을 작성하시겠습니까?",
-				icon: "success",
-                showCancelButton: true, 
-				cancelButtonColor: "#3f51b5",
-				confirmButtonColor: "#3085d6", 
-				confirmButtonText: "확인", 
-				cancelButtonText: "취소", 
-				reverseButtons: true, 
-             }).then(result => {
+			} else {
+				Swal.fire({
+					title: "게시글을 작성하시겠습니까?",
+					icon: "success",
+                	showCancelButton: true, 
+					cancelButtonColor: "#3f51b5",
+					confirmButtonColor: "#3085d6", 
+					confirmButtonText: "확인", 
+					cancelButtonText: "취소", 
+					reverseButtons: true, 
+             	}).then(result => {
 					if (result.isConfirmed) {        
-                 		
+                 		document.writeForm.submit();
 					}
 				});
-			});
+			}
 		});    
 	});
 </script>
@@ -108,12 +108,11 @@ HttpUtil.requestLogString(request, logger);
 <br />
 <div class="container">
    <h2>게시물 쓰기</h2>
-   <form name="writeForm" id="writeForm" action="/board/freeWriteProc.jsp" method="post">
-      <input type="text" name="freeBbsTitle" id="freeBbsTitle" maxlength="100" style="ime-mode:active;" class="form-control mb-2" placeholder="게시글 제목" required />
+   <form name="writeForm" id="writeForm" action="/bbs/freeWriteProc.jsp" method="post">
+      <input type="text" name="freeBbsTitle" id="freeBbsTitle" value="<%= freeBbsTitle %>" maxlength="100" style="ime-mode:active;" class="form-control mb-2" placeholder="게시글 제목" required />
       <div class="form-group">
-         <textarea class="form-control" name="freeBbsContent" id="freeBbsContent" style="ime-mode:active;" required></textarea>
+         <textarea class="form-control" name="freeBbsContent" id="freeBbsContent" style="ime-mode:active;" required><%= freeBbsContent %></textarea>
       </div>
-
       <div class="form-group row">
          <div class="col-sm-12">
             <div class="d-flex justify-content-end mt-4">

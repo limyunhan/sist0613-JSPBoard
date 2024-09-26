@@ -17,8 +17,8 @@
    <h2>맛집 게시물 수정</h2>
 
    <!-- StoreUpdateProc.jsp와 storerUpdateProc.jsp 두 가지를 모두 반영 -->
-   <form name="updateForm" id="updateForm" action="/board/StoreUpdateProc.jsp" method="post">
-   <form name="updateForm" id="updateForm" action="/board/storerUpdateProc.jsp" method="post">
+   <form name="updateForm" id="updateForm" action="/bbs/StoreUpdateProc.jsp" method="post">
+   <form name="updateForm" id="updateForm" action="/bbs/storerUpdateProc.jsp" method="post">
 
       <input type="text" name="bbsName" id="bbsName" maxlength="20" value="" style="ime-mode:active;" class="form-control mt-4 mb-2" placeholder="이름을 입력해주세요." readonly />
       <input type="text" name="bbsEmail" id="bbsEmail" maxlength="30" value="" style="ime-mode:inactive;" class="form-control mb-2" placeholder="이메일을 입력해주세요." readonly />

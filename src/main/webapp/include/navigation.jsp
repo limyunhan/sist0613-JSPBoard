@@ -73,10 +73,10 @@
 		<div class="collapse navbar-collapse" id="navbarColor01">
 			<ul class="navbar-nav me-auto">
 				<li class="nav-item">
-					<a class="nav-link active text-white fs-7" href="/board/freeList.jsp"><i class="fa-solid fa-list"></i> 자유게시판</a>
+					<a class="nav-link active text-white fs-7" href="/bbs/freeList.jsp"><i class="fa-solid fa-list"></i> 자유게시판</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link text-white fs-7" href="/board/restoList.jsp"><i class="fa-solid fa-list-check"></i>음식점 게시판</a>
+					<a class="nav-link text-white fs-7" href="/bbs/restoList.jsp"><i class="fa-solid fa-list-check"></i>음식점 게시판</a>
 				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle text-white fs-7" data-bs-toggle="dropdown" href="" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-sitemap"></i> 사이트맵</a>

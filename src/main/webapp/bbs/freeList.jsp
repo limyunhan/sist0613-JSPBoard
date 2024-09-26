@@ -1,6 +1,26 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.apache.logging.log4j.LogManager"%>
+<%@ page import="org.apache.logging.log4j.Logger"%>
+<%@ page import="com.sist.common.util.StringUtil"%>
+<%@ page import="com.sist.web.util.CookieUtil"%>
+<%@ page import="com.sist.web.util.HttpUtil"%>
+<%@ page import="java.util.List"%>
+<%@ page import="com.sist.web.dao.FreeBbsDao"%>
+<%@ page import="com.sist.web.model.FreeBbs"%>
+<%@ page import="com.sist.web.model.PageConfig"%>
+<%@ page import="com.sist.web.model.Paging"%>
+<%
+Logger logger = LogManager.getLogger("freeList.jsp");
+HttpUtil.requestLogString(request, logger);
 
+
+String searchType = HttpUtil.get(request, "searchType", "");
+String searchValue = HttpUtil.get(request, "searchValue", "");
+FreeBbs search = new FreeBbs();
+
+
+
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +28,7 @@
 <script>
 	$(document).ready(function() {
 		$("#btnWrite").on("click", function() {
-			location.href = "/board/freeWrite.jsp";
+			location.href = "/bbs/freeWrite.jsp";
 		});
 	});
 </script>

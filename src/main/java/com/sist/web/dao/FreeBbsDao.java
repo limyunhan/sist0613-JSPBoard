@@ -216,7 +216,7 @@ public class FreeBbsDao {
 		ResultSet rs = null;
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("SELECT FREE_BOARD_SEQ.NEXTVAL FROM DUAL");
+		sb.append("SELECT FREE_BBS_SEQ.NEXTVAL FROM DUAL");
 		
 		try {
 			ps = conn.prepareStatement(sb.toString());

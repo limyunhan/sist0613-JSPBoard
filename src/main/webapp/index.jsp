@@ -10,11 +10,11 @@
 <script>
 	$(document).ready(function(){
 		$("#btnFree").on("click", function(){
-	   		location.href = "/board/freeList.jsp";
+	   		location.href = "/bbs/freeList.jsp";
 		});
 		
 		$("#btnStore").on("click", function(){
-			location.href = "/board/storeList.jsp";
+			location.href = "/bbs/restoList.jsp";
 		});
 		
 <% 		

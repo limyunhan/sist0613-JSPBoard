@@ -9,7 +9,7 @@
     $(document).ready(function() {
       // 음식점 게시판 버튼 클릭 이벤트
       $("#btnStoreList_Write").on("click", function() {
-        location.href = "/board/storeWrite.jsp";
+        location.href = "/bbs/storeWrite.jsp";
       });
     });
   </script>
