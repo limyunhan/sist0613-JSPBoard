@@ -141,7 +141,7 @@
 			        showConfirmButton: false,
 			        cancelButtonColor: "#3085d6",
 			        cancelButtonText: "확인"
-			    })
+			    });
 			    
 			} else if ($(".emailText").text() !== "사용 가능한 이메일입니다.") {
 				Swal.fire({
@@ -151,7 +151,7 @@
 			        showConfirmButton: false,
 			        cancelButtonColor: "#3085d6",
 			        cancelButtonText: "확인"
-			    })
+			    });
 			    
 			} else {
 				Swal.fire({

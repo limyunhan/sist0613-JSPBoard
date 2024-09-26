@@ -3,25 +3,27 @@
 <html>
 <head>
 <%@ include file="/include/header.jsp" %>
-
 <%
-	String cpIdSchYn = (String)session.getAttribute("idSchYn");
-	session.removeAttribute("idSchYn");
+	String openLoginModal = (String)session.getAttribute("openLoginModal");
+	session.removeAttribute("openLoginModal");
 %>
 <script>
 	$(document).ready(function(){
-	   $("#btnFree").on("click", function(){
-	       location.href = "/board/freeList.jsp";
-	       });
-	   
-	   $("#btnStore").on("click", function(){
-	       location.href = "/board/storeList.jsp";
-	       });
-	   
-	   
-	   <% if(cpIdSchYn != null && "1".equals(cpIdSchYn)) { %>
-	  			 showModal();
-	   <% } %>
+		$("#btnFree").on("click", function(){
+	   		location.href = "/board/freeList.jsp";
+		});
+		
+		$("#btnStore").on("click", function(){
+			location.href = "/board/storeList.jsp";
+		});
+		
+<% 		
+		if(openLoginModal != null && openLoginModal.equals("1")) { 
+%>
+			showModal();
+<% 
+		} 
+%>
 	});
 </script>
 

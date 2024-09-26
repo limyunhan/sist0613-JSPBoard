@@ -34,8 +34,6 @@ if (user != null) {
 	<%@ include file="/include/header.jsp"%>
 	<script>
 	$(document).ready(function() {
-	    var emailCheck = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-	
 	    $("#userPwd1").on("input", function() {
 		    var idPwdCheck = /^[a-zA-Z0-9]{4,12}$/;
 		    var emptyCheck = /\s/g;
@@ -70,6 +68,7 @@ if (user != null) {
 		});
 	
 	    $("#userEmail").on("input", function() {
+			var emailCheck = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
 		    if ($.trim($("#userEmail").val()).length === 0) {
 		    	$(".emailText").text("이메일을 입력하세요.").css("color", "red");
 		    } else if (!emailCheck.test($("#userEmail").val())) {
@@ -127,7 +126,7 @@ if (user != null) {
 			        showConfirmButton: false,
 			        cancelButtonColor: "#3085d6",
 			        cancelButtonText: "확인"
-			    })
+			    });
 			    
 			} else {
 				Swal.fire({

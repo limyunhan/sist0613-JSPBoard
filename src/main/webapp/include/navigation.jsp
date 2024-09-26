@@ -5,55 +5,58 @@
 
 <% if (!request.getRequestURI().contains("user")) { %>
 <script>
-$(document).ready(function() {
-	$("#loginModal").on("click", function() {
-		$("#loginModal").on("shown.bs.modal", function() {
-			$("#userId").focus();
+	$(document).ready(function() {
+		$("#loginModal").on("click", function() {
+			$("#loginModal").on("shown.bs.modal", function() {
+				$("#userId").focus();
+			});
 		});
-	});
-
-	$("#btnLogin").on("click", function() {
-			fn_loginCheck();
-	});
-
-	$("#btnOut").on("click", function() {
-		location.href = "loginOut.jsp";
-	});
 	
-<% 
-	if (StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) {
-%>
-		$("#regForm").on("click", function() {
-			location.href = "/user/userRegForm.jsp";
+		$("#btnLogin").on("click", function() {
+			fn_loginCheck();
+		});
+	
+		$("#btnOut").on("click", function() {
+			location.href = "loginOut.jsp";
 		});
 <% 
-	} else {
+		if (StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) {
 %>
-		$("#updateForm").on("click", function() {
-			location.href = "/user/userUpdateForm.jsp";
-		});
+			$("#regForm").on("click", function() {
+				location.href = "/user/userRegForm.jsp";
+			});
+<% 
+		} else {
+%>
+			$("#updateForm").on("click", function() {
+				location.href = "/user/userUpdateForm.jsp";
+			});
 <%
-	}
+		}
 %>
-});
+	});
 
-function fn_loginCheck() {
-	if ($.trim($("#userId").val()).length === 0) {
-		alert("아이디를 입력하세요.");
-		$("#userId").val("");
-		$("#userId").focus();
-		return;
+	function fn_loginCheck() {
+		if ($.trim($("#userId").val()).length === 0) {
+			alert("아이디를 입력하세요.");
+			$("#userId").val("");
+			$("#userId").focus();
+			return;
+		}
+	
+		if ($.trim($("#userPwd").val()).length === 0) {
+			alert("비밀번호를 입력하세요.");
+			$("#userPwd").val("");
+			$("#userPwd").focus();
+			return;
+		}
+	
+		document.loginForm.submit();
 	}
 
-	if ($.trim($("#userPwd").val()).length === 0) {
-		alert("비밀번호를 입력하세요.");
-		$("#userPwd").val("");
-		$("#userPwd").focus();
-		return;
+	function showModal() {
+		$("#loginModal").modal("show");
 	}
-
-	document.loginForm.submit();
-}
 </script>
 <% } %>
 <nav class="navbar navbar-expand-lg bg-info">
@@ -79,23 +82,23 @@ function fn_loginCheck() {
 				</li>
 			</ul>
 			<div class="d-flex align-items-center">
-				<%
+<%
 				if (!request.getRequestURI().contains("user")) {
 					if (StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) {
-				%>
+%>
 				<!-- 로그인이 안 되어 있을 경우 -->
 				<button type="button" id="regForm" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원가입</button>
 				<button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</button>
-				<%
+<%
 				} else {
-				%>
+%>
 				<!-- 로그인이 되어 있을 경우 -->
 				<button type="button" id="updateForm" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원정보수정</button>
 				<button type="button" id="btnOut" class="btn btn-outline-primary">로그아웃</button>
-				<%
+<%
 					}
 				}
-				%>
+%>
 			</div>
 		</div>
 	</div>

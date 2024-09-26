@@ -17,7 +17,8 @@ String userName = HttpUtil.get(request, "userName");
 String userEmail = HttpUtil.get(request, "userEmail");
 String userBirthDay = HttpUtil.get(request, "userBirthDay").replace("-", "");
 String cookieUserId = CookieUtil.getValue(request, "USER_ID");
-String msg = "";
+
+String msg;
 String redirectUrl = "/user/userRegForm.jsp"; 
 String icon = "warning"; 
 

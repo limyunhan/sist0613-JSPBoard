@@ -58,20 +58,20 @@
                 return;
             }
             
-            document.pwdFindForm.submit();
+            document.findForm.submit();
         });
     });
 </script>
 </head>
 <body>
 <%@ include file="/include/navigation.jsp"%>
-<div class="container" style="max-width: 400px; background-color: #e8eaf6; border-radius: 10px; padding: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+<div class="container" style="max-width: 600px; background-color: #e8eaf6; border-radius: 10px; padding: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
     <div class="row mt-5">
         <h1 class="text-center text-nowrap">비밀번호 찾기</h1>
     </div>
     <div class="row mt-4">
         <div class="col-12">
-            <form name="pwdFindForm" method="post" action="/user/userFindPwdProc.jsp">
+            <form name="findForm" method="post" action="/user/userFindPwdProc.jsp">
                 <div class="form-group mb-3">
                     <label for="userId" class="form-label">사용자 아이디</label>
                     <input type="text" class="form-control me-3" id="userId" name="userId" placeholder="사용자 아이디" maxlength="12" required style="flex: 1;">

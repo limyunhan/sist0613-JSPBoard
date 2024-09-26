@@ -45,7 +45,7 @@
 </head>
 <body>
 <%@ include file="/include/navigation.jsp"%>
-<div class="container" style="max-width: 400px; background-color: #e8eaf6; border-radius: 10px; padding: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+<div class="container" style="max-width: 600px; background-color: #e8eaf6; border-radius: 10px; padding: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
     <div class="row mt-5">
         <h1 class="text-center text-nowrap">아이디 찾기</h1>
     </div>
