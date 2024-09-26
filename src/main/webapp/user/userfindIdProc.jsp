@@ -14,8 +14,10 @@ HttpUtil.requestLogString(request, logger);
 String userName = HttpUtil.get(request, "userName");
 String userEmail = HttpUtil.get(request, "userEmail");
 
+User user = null;
 String msg;
 String redirectUrl = "/user/userFindId.jsp";
+boolean isFound = false;
 
 if (StringUtil.isEmpty(userName) || StringUtil.isEmpty(userEmail)) {
     msg = "비정상적인 접근입니다.";
@@ -24,10 +26,11 @@ if (StringUtil.isEmpty(userName) || StringUtil.isEmpty(userEmail)) {
     String userId = userDao.userIdSearch(userName, userEmail);
 
     if (userId != null) {
-        User user = userDao.userSelect(userId);
+        user = userDao.userSelect(userId);
         if (user != null) {
             if (user.getUserStatus().equals("Y")) {
-                msg = "아이디를 찾았습니다. 아이디 : " + user.getUserId();
+                msg = "아이디를 찾았습니다.";
+                isFound = true;
                 session.setAttribute("openLoginModal", "1");
             } else {
                 msg = "탈퇴한 사용자입니다.";
@@ -50,6 +53,9 @@ if (StringUtil.isEmpty(userName) || StringUtil.isEmpty(userEmail)) {
     $(document).ready(function(){
         Swal.fire({
             title: "<%=msg%>",
+			<% if(isFound) { %>
+			text: "아이디 : <%= user.getUserId()%>",
+			<% } %>
             icon: "<%=redirectUrl.equals("/") ? "success" : "warning"%>",
             confirmButtonColor: "#3085d6",
             confirmButtonText: "확인",

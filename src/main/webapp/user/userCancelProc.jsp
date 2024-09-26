@@ -25,6 +25,7 @@ if (!StringUtil.isEmpty(cookieUserId)) {
 		if(user != null) {
 			if(StringUtil.equals(user.getUserPwd(), userPwd)) {
 				if(userDao.userCancel(user.getUserId())) {
+					CookieUtil.deleteCookie(request, response, "/", "USER_ID");
 					msg = "회원 탈퇴가 완료되었습니다.";
 					redirectUrl = "/";
 					icon = "success";

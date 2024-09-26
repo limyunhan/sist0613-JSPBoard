@@ -15,8 +15,9 @@ HttpUtil.requestLogString(request, logger);
 String userId = HttpUtil.get(request, "userId");
 String userPwd = HttpUtil.get(request, "userPwd");
 
-String msg = "";
-String redirectUrl = "";
+String msg;
+String redirectUrl = "/";
+String icon = "warning";
 
 if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 	UserDao userDao = new UserDao();
@@ -26,32 +27,44 @@ if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 			if (user.getUserStatus().equals("Y")) {
 				CookieUtil.addCookie(response, "/", "USER_ID", userId);
 				msg = "로그인 성공";
-				redirectUrl = "/";
+				icon = "success";
 			} else {
 				msg = "탈퇴한 사용자입니다.";
-				redirectUrl = "/";
+				session.setAttribute("openLoginModal", "1");
 			}
 		} else {
 			msg = "아이디 또는 비밀번호가 일치하지 않습니다.";
-			redirectUrl = "/";
+			session.setAttribute("openLoginModal", "1");
 		}
 	} else {
 		msg = "아이디 또는 비밀번호가 일치하지 않습니다.";
-		redirectUrl = "/";
+		session.setAttribute("openLoginModal", "1");
 	}
 } else {
 	msg = "비정상적인 접근입니다.";
-	redirectUrl = "/";
+	session.setAttribute("openLoginModal", "1");
 }
+
 %>
 <!DOCTYPE html>
 <html>
 <head>
+<%@ include file="/include/header.jsp" %>
 </head>
 <body>
 <script>
-   alert("<%=msg%>");
-   location.href = "<%=redirectUrl%>";
+	$(document).ready(function(){
+	    Swal.fire({
+	        title: "<%=msg%>",
+	        icon: "<%=icon%>",
+	        confirmButtonColor: "#3085d6",
+	        confirmButtonText: "확인",
+	    }).then(result => {
+	        if (result.isConfirmed) {        
+	            location.href = "<%=redirectUrl%>";
+	        }
+	    });
+	});
 </script>
 </body>
 </html>

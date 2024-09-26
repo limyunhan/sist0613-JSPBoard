@@ -14,21 +14,24 @@ String userId = HttpUtil.get(request, "userId");
 String userName = HttpUtil.get(request, "userName");
 String userEmail = HttpUtil.get(request, "userEmail");
 
+User user = null;
 String msg;
 String redirectUrl = "/user/userFindPwd.jsp";
+boolean isFound = false;
 
 if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(userName) || StringUtil.isEmpty(userEmail)) {
     msg = "비정상적인 접근입니다.";
 } else {
 	UserDao userDao = new UserDao();
-    User user = userDao.userPwdSearch(userName, userEmail, userId);
+    user = userDao.userPwdSearch(userName, userEmail, userId);
     
     if (user != null) {
         if (user.getUserStatus().equals("Y")) {
-            msg = "비밀번호를 찾았습니다. 비밀번호: " + user.getUserPwd();
+            msg = "비밀번호를 찾았습니다.";
+            isFound = true;
             session.setAttribute("openLoginModal", "1");
         } else {
-            msg = "정지된 사용자입니다.";
+            msg = "탈퇴한 사용자입니다.";
         }
         redirectUrl = "/";
     } else {
@@ -45,6 +48,9 @@ if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(userName) || StringUtil.isE
     	$(document).ready(function(){
         	Swal.fire({
             	title: "<%=msg%>",
+    			<% if(isFound) { %>
+    			text: "비밀번호 : <%= user.getUserPwd()%>",
+    			<% } %>
                 icon: "<%=redirectUrl.equals("/") ? "success" : "warning"%>",
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "확인",

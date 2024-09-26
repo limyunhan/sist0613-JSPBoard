@@ -32,21 +32,21 @@ if (user != null) {
 	<head>
 	<%@ include file="/include/header.jsp"%>
 	<script>
-		$(document).ready(function(){
+		$(document).ready(function() {
 		    $("#userPwd2").on("input", function() {
 			    if ($("#userPwd1").val() !== $("#userPwd2").val()) {
 			    	$(".pwdText2").text("비밀번호가 일치하지 않습니다.").css("color", "red");
 				   
-			    } else if ($.trim($("#userPwd1").val() !== "") {
+			    } else if ($.trim($("#userPwd1").val()).length !== 0) {
 			    	$(".pwdText2").text("비밀번호가 일치합니다.").css("color", "blue");	
 			    }
 			});
 		    
 		    $("#btnCancel").on("click",function() {
-		    	if($(".pwdText2").text === "비밀번호가 일치합니다." && $.trim($("#userPwd1").val()).length !== 0) {
+		    	if($(".pwdText2").text() === "비밀번호가 일치합니다." && $.trim($("#userPwd1").val()).length !== 0) {
 			    	var isPwdValid = false;
 			    	var errorMsg = "";
-			    	
+			    	  	
 					$.ajax({
 						type: "POST",
 			        	url: "/user/userPwdCheckAjax.jsp",
@@ -74,11 +74,10 @@ if (user != null) {
 				    	Swal.fire({
 				    		title: errorMsg,
 				    		icon: "warning",
-				    		showCancelButton: true,
-				    		showConfirmButton: false,
-				    		cancelButtonColor "#3085d6",
-				    		cancelButtonText: "확인"
+				    		confirmButtonColor: "#3085d6",
+				    		confirmButtonText: "확인"
 				    	});
+				   
 				
 			    	} else {
 			    		$("#userPwd").val($("#userPwd1").val());
@@ -86,8 +85,8 @@ if (user != null) {
 							title: "정말로 탈퇴하시겠습니까?",
 							icon: "warning",
 							showCancelButton: true, 
+							cancelButtonColor: "#3f51b5",
 							confirmButtonColor: "#3085d6", 
-							cancelButtonColor: "#d33", 
 							confirmButtonText: "확인", 
 							cancelButtonText: "취소", 
 							reverseButtons: true, 
@@ -101,10 +100,8 @@ if (user != null) {
 					Swal.fire({
 				    	title: "비밀번호를 입력해주세요.",
 				    	icon: "warning",
-				    	showCancelButton: true,
-					    showConfirmButton: false,
-					    cancelButtonColor: "#3085d6",
-					    cancelButtonText: "확인"
+					    confirmButtonColor: "#3085d6",
+					    confirmButtonText: "확인"
 				    });
 		    	}
 			});

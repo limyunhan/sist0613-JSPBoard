@@ -78,6 +78,9 @@
 					<div class="dropdown-menu">
 						<a class="dropdown-item" href="">이용약관</a> 
 						<a class="dropdown-item" href="">개인정보처리방침</a>
+						<% if (!StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) { %>
+						<a class="dropdown-item" href="/user/userCancelForm.jsp">회원탈퇴</a>
+						<% } %>
 					</div>
 				</li>
 			</ul>

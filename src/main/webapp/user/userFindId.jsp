@@ -51,7 +51,7 @@
     </div>
     <div class="row mt-4">
         <div class="col-12">
-            <form name="findForm" method="post" action="/user/userfindIdProc.jsp">
+            <form name="findForm" method="post" action="/user/userFindIdProc.jsp">
                 <div class="form-group mb-3">
                     <label for="userName" class="form-label">사용자 이름</label>
                     <input type="text" class="form-control" id="userName" name="userName" placeholder="사용자 이름" maxlength="15" required style="flex: 1;">

@@ -74,6 +74,7 @@ if (StringUtil.isEmpty(cookieUserId)) {
             if (userDao.userUpdate(user)) {
                 msg = "회원정보가 수정 되었습니다.";
                 icon = "success";
+                redirectUrl = "/";
             } else {
                 msg = "회원정보 수정 중 오류가 발생하였습니다.";
                 icon = "error";
