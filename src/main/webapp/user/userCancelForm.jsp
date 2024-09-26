@@ -74,8 +74,10 @@ if (user != null) {
 				    	Swal.fire({
 				    		title: errorMsg,
 				    		icon: "warning",
-				    		confirmButtonColor: "#3085d6",
-				    		confirmButtonText: "확인"
+					        showCancelButton: true,
+					        showConfirmButton: false,
+					        cancelButtonColor: "#3085d6",
+					        cancelButtonText: "확인"
 				    	});
 				   
 				
@@ -100,8 +102,10 @@ if (user != null) {
 					Swal.fire({
 				    	title: "비밀번호를 입력해주세요.",
 				    	icon: "warning",
-					    confirmButtonColor: "#3085d6",
-					    confirmButtonText: "확인"
+				        showCancelButton: true,
+				        showConfirmButton: false,
+				        cancelButtonColor: "#3085d6",
+				        cancelButtonText: "확인"
 				    });
 		    	}
 			});

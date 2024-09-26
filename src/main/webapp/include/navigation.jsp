@@ -1,8 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.sist.common.util.StringUtil"%>
 <%@ page import="com.sist.web.util.CookieUtil"%>
-
 <% if (!request.getRequestURI().contains("user")) { %>
 <script>
 	$(document).ready(function() {
@@ -11,23 +9,27 @@
 				$("#userId").focus();
 			});
 		});
-	
-		$("#btnLogin").on("click", function() {
-			fn_loginCheck();
-		});
-	
-		$("#btnOut").on("click", function() {
-			location.href = "loginOut.jsp";
-		});
 <% 
 		if (StringUtil.isEmpty(CookieUtil.getValue(request, "USER_ID"))) {
 %>
+			$("#btnLogin").on("click", function() {
+				fn_loginCheck();
+			});
+			
 			$("#regForm").on("click", function() {
 				location.href = "/user/userRegForm.jsp";
 			});
 <% 
 		} else {
 %>
+			$("#btnLogout").on("click", function() {
+<%
+				String currentUrl = request.getRequestURI();
+				session.setAttribute("previousUrl", currentUrl);
+%>		
+				location.href = "/loginOut.jsp";
+			});
+			
 			$("#updateForm").on("click", function() {
 				location.href = "/user/userUpdateForm.jsp";
 			});
@@ -50,7 +52,10 @@
 			$("#userPwd").focus();
 			return;
 		}
-	
+<%
+		String currentUrl = request.getRequestURI();
+		session.setAttribute("previousUrl", currentUrl);
+%>		
 		document.loginForm.submit();
 	}
 
@@ -97,7 +102,7 @@
 %>
 				<!-- 로그인이 되어 있을 경우 -->
 				<button type="button" id="updateForm" class="btn btn-outline-primary me-2" style="background-color: #3f51b5;">회원정보수정</button>
-				<button type="button" id="btnOut" class="btn btn-outline-primary">로그아웃</button>
+				<button type="button" id="btnLogout" class="btn btn-outline-primary">로그아웃</button>
 <%
 					}
 				}

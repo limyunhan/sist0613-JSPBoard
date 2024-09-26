@@ -27,6 +27,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sist.common.util.StringUtil;
+import com.sist.web.dao.UserDao;
+import com.sist.web.model.User;
 import com.sist.web.util.CookieUtil;
 
 /**
@@ -83,7 +85,12 @@ public class UrlUserAuthFilter implements Filter {
 		boolean bFlag = true;
 
 		String url = httpServletRequest.getRequestURI(); // 호출 웹 경로를 가져온다.
-
+		
+		// View와 List에 한해서 예외 처리
+		if (url.contains("View") || url.contains("List")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 		if (authUrlCheck(url)) // url이 인증 체크 인지 검사
 		{
@@ -92,7 +99,7 @@ public class UrlUserAuthFilter implements Filter {
 			// 쿠키 값으로 로그인이 되어있는지 체크
 			if (!isUserLogin(httpServletRequest, httpServletResponse)) //
 			{
-				// 로그인이 안되어있다면 로그인 화면으로 보낸다.
+				((HttpServletRequest) request).getSession().setAttribute("openLoginModal", "1");
 				httpServletResponse.sendRedirect("/");
 				bFlag = false;
 			}
@@ -122,19 +129,19 @@ public class UrlUserAuthFilter implements Filter {
 	private boolean isUserLogin(HttpServletRequest request, HttpServletResponse response) {
 		String cookieUserId = CookieUtil.getValue(request, "USER_ID");
 		
-		/*
+
 		if(!StringUtil.isEmpty(cookieUserId)) { // 쿠키 값이 있다면 
 			UserDao userDao = new UserDao(); 
 			User user = userDao.userSelect(cookieUserId); // 사용자 조회
-			if(user != null && StringUtil.equals(user.getStatus(), "Y")) { // 사용자 정보가 있으면서 status 값이 "Y" 이면 정상 로그인된 사용자
+			if(user != null && StringUtil.equals(user.getUserStatus(), "Y")) { // 사용자 정보가 있으면서 status 값이 "Y" 이면 정상 로그인된 사용자
 				return true; 
 			} else { // 쿠키는 있으면서 사용자 정보가 없거나 status 값이  "Y"와 같지 않다면 
+				request.getSession().setAttribute("openLoginModal", "1");
 				CookieUtil.deleteCookie(request, response, "USER_ID"); 
 			} 
 		}
-		*/
 		
-		return true; // return false;
+		return false;
 	}
 
 
@@ -153,7 +160,6 @@ public class UrlUserAuthFilter implements Filter {
 		if (authUrlList != null && authUrlList.size() > 0 && !StringUtil.isEmpty(url)) {
 			for (int i = 0; i < authUrlList.size(); i++) {
 				String checkUrl = StringUtil.trim(authUrlList.get(i));
-
 				if (!StringUtil.isEmpty(checkUrl)) {
 					// url의 길이가 checkUrl길이보다 크거나 같다면
 					if (checkUrl.length() <= url.length()) {

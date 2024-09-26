@@ -16,8 +16,10 @@ String userId = HttpUtil.get(request, "userId");
 String userPwd = HttpUtil.get(request, "userPwd");
 
 String msg;
-String redirectUrl = "/";
 String icon = "warning";
+String redirectUrl = "/";
+String previousUrl = (String)session.getAttribute("previousUrl");
+session.removeAttribute("previousUrl");
 
 if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 	UserDao userDao = new UserDao();
@@ -28,6 +30,7 @@ if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 				CookieUtil.addCookie(response, "/", "USER_ID", userId);
 				msg = "로그인 성공";
 				icon = "success";
+				redirectUrl = !StringUtil.isEmpty(previousUrl) ? previousUrl : "/";
 			} else {
 				msg = "탈퇴한 사용자입니다.";
 				session.setAttribute("openLoginModal", "1");
@@ -44,7 +47,6 @@ if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 	msg = "비정상적인 접근입니다.";
 	session.setAttribute("openLoginModal", "1");
 }
-
 %>
 <!DOCTYPE html>
 <html>
@@ -54,13 +56,14 @@ if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 <body>
 <script>
 	$(document).ready(function(){
+		
 	    Swal.fire({
 	        title: "<%=msg%>",
 	        icon: "<%=icon%>",
 	        confirmButtonColor: "#3085d6",
 	        confirmButtonText: "확인",
 	    }).then(result => {
-	        if (result.isConfirmed) {        
+	        if (result.isConfirmed) {      
 	            location.href = "<%=redirectUrl%>";
 	        }
 	    });

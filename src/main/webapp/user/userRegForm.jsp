@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -137,8 +136,6 @@
 			    Swal.fire({
 				    title: "아이디 중복체크후 진행해주세요.",
 			        icon: "warning",
-			        showCancelButton: true,
-			        showConfirmButton: false,
 			        cancelButtonColor: "#3085d6",
 			        cancelButtonText: "확인"
 			    });

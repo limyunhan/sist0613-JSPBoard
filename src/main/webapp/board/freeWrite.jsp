@@ -1,5 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.apache.logging.log4j.LogManager"%>
+<%@ page import="org.apache.logging.log4j.Logger"%>
+<%@ page import="com.sist.common.util.StringUtil"%>
+<%@ page import="com.sist.web.util.CookieUtil"%>
+<%@ page import="com.sist.web.util.HttpUtil"%>
+<%@ page import="com.sist.web.model.User" %>
+<%@ page import="com.sist.web.dao.UserDao" %>
+
+<%
+Logger logger = LogManager.getLogger("freeWrite.jsp");
+HttpUtil.requestLogString(request, logger);
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +20,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/lang/summernote-ko-KR.min.js"></script>
 <style>
 	.note-editor {
-	    border: 2px solid #1e88e5; 
+		border: 2px solid #1e88e5; 
 	    border-radius: 5px; 
 	    font-family: "GmarketSans"; 
 	}
@@ -34,45 +45,62 @@
 	}
 </style>
 <script>
-  $(document).ready(function() {
-	  $("#freeBbsTitle").focus();
-      $("#freeBbsContent").summernote({
-          lang: 'ko-KR',
-          toolbar: [
-              ["insert", ['picture']],
-              ["fontname", ["fontname"]],
-              ["fontsize", ["fontsize"]],
-              ["color", ["color"]],
-              ["style", ["style"]],
-              ["font", ["strikethrough", "superscript", "subscript"]],
-	          ["table", ["table"]],
-	          ["para", ["ul", "ol", "paragraph"]],
-	          ["height", ["height"]],
-	      ],
-	      fontNames: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'],
-	      fontNamesIgnoreCheck: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'], 
-	  });
-      
-      
-      $("#btnWrite").on("click", function(){
-    	 if($.trim($("#freeBbsTitle").val()).length === 0) {
-    		 alert("게시글 제목을 입력해주세요.");
-    		 $("#freeBbsTitle").val("");
-    		 $("#freeBbsTitle").focus();
-    		 return;
-    	 } 
-    	 
-    	 if($.trim($("#freeBbsContent").val()).length === 0) {
-    		 alert("게시글 내용을 입력해주세요.");
-    		 $("#freeBbsContent").val("");
-    		 $('#freeBbsContent').focus();
-    		 return;
-    	 }
-    	 
-      });
-      
-      
-  });
+	$(document).ready(function() {
+		$("#freeBbsTitle").focus();
+		$("#freeBbsContent").summernote({
+			lang: 'ko-KR',
+			toolbar: [
+				["insert", ['picture']],
+	            ["fontname", ["fontname"]],
+	            ["fontsize", ["fontsize"]],
+	            ["color", ["color"]],
+	            ["style", ["style"]],
+	            ["font", ["strikethrough", "superscript", "subscript"]],
+	            ["table", ["table"]],
+	        	["para", ["ul", "ol", "paragraph"]],
+	        	["height", ["height"]],
+	    	],
+	    	fontNames: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'],
+	    	fontNamesIgnoreCheck: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'], 
+		});
+		
+		$("#btnWrite").on("click", function() {
+			if($.trim($("#freeBbsTitle").val()).length === 0) { 
+				Swal.fire({
+					title: "제목을 입력해주세요.",
+    			 	icon: "warning",
+    			 	showCancelButton: true,
+				    showConfirmButton: false,
+				    cancelButtonColor: "#3085d6",
+				    cancelButtonText: "확인"
+    			});
+			} else if($.trim($("#freeBbsContent").val()).length === 0) {
+				Swal.fire({
+					title:"내용을 입력해주세요.",
+					icon: "warning",
+    			 	showCancelButton: true,
+				    showConfirmButton: false,
+				    cancelButtonColor: "#3085d6",
+				    cancelButtonText: "확인"
+				});
+    	 } else {
+             Swal.fire({
+                title: "게시글을 작성하시겠습니까?",
+				icon: "success",
+                showCancelButton: true, 
+				cancelButtonColor: "#3f51b5",
+				confirmButtonColor: "#3085d6", 
+				confirmButtonText: "확인", 
+				cancelButtonText: "취소", 
+				reverseButtons: true, 
+             }).then(result => {
+					if (result.isConfirmed) {        
+                 		
+					}
+				});
+			});
+		});    
+	});
 </script>
 </head>
 <body>

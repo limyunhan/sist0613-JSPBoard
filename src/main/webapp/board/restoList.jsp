@@ -91,7 +91,7 @@
                     <a class="page-link" href="#">&raquo;</a>
                   </li>
                   <li class="ms-auto">
-                    <button type="button" id="btnStoreList_Write" class="btn btn-outline-light d-flex align-items-center">
+                    <button type="button" id="btnWrite" class="btn btn-outline-light d-flex align-items-center">
                       <i class="fa-sharp-duotone fa-solid fa-pen me-1"></i>
                       <span>음식점 글쓰기</span>
                     </button>

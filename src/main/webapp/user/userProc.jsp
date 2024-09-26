@@ -6,7 +6,6 @@
 <%@ page import="com.sist.common.util.StringUtil"%>
 <%@ page import="com.sist.web.util.CookieUtil"%>
 <%@ page import="com.sist.web.util.HttpUtil"%>
-
 <%
 Logger logger = LogManager.getLogger("userProc.jsp");
 HttpUtil.requestLogString(request, logger);

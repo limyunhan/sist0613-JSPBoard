@@ -6,7 +6,6 @@
 <%@ page import="com.sist.web.util.HttpUtil"%>
 <%@ page import="com.sist.web.model.User" %>
 <%@ page import="com.sist.web.dao.UserDao" %>
-
 <%
 Logger logger = LogManager.getLogger("userUpdateForm.jsp");
 HttpUtil.requestLogString(request, logger);

@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <html>
@@ -52,8 +51,10 @@
                 Swal.fire({
                     title: "모든 필드를 올바르게 입력해주세요.",
                     icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "확인"
+			        showCancelButton: true,
+			        showConfirmButton: false,
+			        cancelButtonColor: "#3085d6",
+			        cancelButtonText: "확인"
                 });
                 return;
             }
