@@ -1,14 +1,19 @@
 # 프로젝트 이름 (sist0613-JSPBoard)
 
 ## 개요
-간단한 JSP 기반 CRUD 기능을 제공하는 게시판 프로젝트입니다. 이 프로젝트는 회원가입, 로그인, 글 작성, 수정, 삭제 등의 기능을 포함하고 있습니다.
+2024.06.13 쌍용강북교육센터 국비교육 미니 프로젝트
+
+간단한 JSP 기반 CRUD 기능을 제공하는 게시판 프로젝트입니다. 
+이 프로젝트는 회원가입, 로그인, 글 작성, 수정, 삭제 등의 기능을 포함하고 있으며,
+추가적으로 댓글 및 파일업로드, 음식점 게시판 기능들을 추가하였습니다.
 
 ## 기술 스택
-- **Frontend**: jQuery
+- **Frontend**: jquery-3.7.1.
 - **Backend**: JSP
 - **Database**: Oracle
 - **IDE**: Eclipse 2022-12 EE
 - **Server**: Apache Tomcat
+- **Library**: Bootswatch Morph(Bootstrap Theme), Font Awesome, SweetAlert2, Summernote
 
 ## 기능
 - **회원가입 및 로그인**: 사용자는 회원가입 및 로그인을 통해 게시판을 이용할 수 있습니다.
