@@ -55,5 +55,7 @@ public class FreeBbs implements Serializable {
 		setFreeBbsStatus("");
 		setRegDate("");
 		setUpdateDate("");
+		setStartPost(0);
+		setEndPost(0);
 	}
 }
