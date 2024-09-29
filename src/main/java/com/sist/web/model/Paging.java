@@ -19,8 +19,8 @@ public class Paging implements Serializable {
 	private int numOfPagePerBlock; // 블록당 페이지 수
 
 	private long totalPost; // 총 게시물의 수
-	private long startPost; // 현재 페이지 내에서의 시작 게시물의 rownum
-	private long endPost; // 현재 페이지 내에서의 끝 게시물의 rownum
+	private long startPost; // 현재 페이지 내에서의 시작 게시물의 row num
+	private long endPost; // 현재 페이지 내에서의 끝 게시물의 row num
 	private int numOfPostPerPage; // 페이지당 게시물 수
 	
 	public long getTotalBlock() {return totalBlock;}

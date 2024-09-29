@@ -8,12 +8,9 @@
 Logger logger = LogManager.getLogger("loginOut.jsp");
 HttpUtil.requestLogString(request, logger);
 
-String previousUrl = (String)session.getAttribute("previousUrl");
-session.removeAttribute("previousUrl");
-
 if(CookieUtil.getCookie(request, "USER_ID") != null) {
    CookieUtil.deleteCookie(request, response, "USER_ID");
 }
 
-response.sendRedirect(!StringUtil.isEmpty(previousUrl) ? previousUrl : "/");
+response.sendRedirect("/");
 %>

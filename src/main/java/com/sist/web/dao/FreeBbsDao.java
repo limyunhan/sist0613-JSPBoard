@@ -240,8 +240,8 @@ public class FreeBbsDao {
 		PreparedStatement ps = null;
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO FREE_BBS(FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_STATUS, REG_DATE) ") 
-		  .append("VALUES (?, ?, ?, ?, 0, 0, 'Y', SYSDATE)");
+		sb.append("INSERT INTO FREE_BBS(FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_STATUS, REG_DATE) ") 
+		  .append("VALUES (?, ?, ?, ?, 0, 'Y', SYSDATE)");
 		
 		int cnt = 0;
 		
@@ -263,7 +263,7 @@ public class FreeBbsDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}
 	
 	// 자유 게시글 수정 1 : 게시글 수정
@@ -273,7 +273,7 @@ public class FreeBbsDao {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE FREE_BBS ")
-		  .append("SET BBS_TITLE = ?, BBS_CONTENT = ?, UPDATE_DATE = SYSDATE ")
+		  .append("SET FREE_BBS_TITLE = ?, FREE_BBS_CONTENT = ?, UPDATE_DATE = SYSDATE ")
 		  .append("WHERE FREE_BBS_SEQ = ?");
 		
 		int cnt = 0;
@@ -287,18 +287,17 @@ public class FreeBbsDao {
 			ps.setLong(++idx, freeBbs.getFreeBbsSeq());
 			cnt = ps.executeUpdate();
 		} catch (SQLException e) {
-			logger.error("[FreeBbsDao]", e);
+			logger.error("[FreeBbsDao]freeBbsUpdate SQLException", e);
 		} finally {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 		
 	}
 	
-	// 자유 게시글 수정 2 : 게시글 조회수 증가 
-	public boolean freeBbsReadCntPlus(long freeBbsSeq) {
-		Connection conn = null;
+	// 자유 게시글 수정 2 : 게시글 조회수 가져오기전 조회수 증가
+	public boolean freeBbsReadCntPlus(Connection conn, long freeBbsSeq) {
 		PreparedStatement ps = null;
 		
 		StringBuilder sb = new StringBuilder();
@@ -313,12 +312,41 @@ public class FreeBbsDao {
 			ps.setLong(1, freeBbsSeq);
 			cnt = ps.executeUpdate();
 		} catch (SQLException e) {
-			logger.error("[FreeBbsDao]", e);
+			logger.error("[FreeBbsDao]freeBbsReadCntPlus SQLException", e);
 		} finally {
-			DBManager.close(ps, conn);
+			DBManager.close(ps);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
+	}
+	
+	// 자유 게시글 수정 2 : 조회수 가져오기
+	public int getFreeBbsReadCnt(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT FREE_BBS_READ_CNT FROM FREE_BBS WHERE FREE_BBS_SEQ = ?");
+		
+		int cnt = -1;
+		try {
+			conn = DBManager.getConnection();
+			if(freeBbsReadCntPlus(conn, freeBbsSeq)) {
+				ps = conn.prepareStatement(sb.toString());
+				ps.setLong(1, freeBbsSeq);
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					cnt = rs.getInt("FREE_BBS_READ_CNT");
+				}
+			}	
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]getFreeBbsReadCnt SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+		
+		return cnt;
 	}
 	
 	// 자유 게시글 수정 3 : 게시글 삭제('N'으로 변경)
@@ -343,6 +371,6 @@ public class FreeBbsDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}	
 }

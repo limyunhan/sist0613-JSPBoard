@@ -34,7 +34,7 @@
 	          	dataType: "JSON", 
 				success : function(obj){
 					if (obj.flag === 1) {
-						$(".idText").text("사용 가능한 아이디 입니다.").css("color", "blue");
+						$(".idText").text("사용 가능한 아이디입니다.").css("color", "blue");
 					} else if (obj.flag === 0) {
 						$(".idText").text("중복된 아이디입니다. 아이디를 다시 입력하세요.").css("color", "red");
 						$("#userId").focus();

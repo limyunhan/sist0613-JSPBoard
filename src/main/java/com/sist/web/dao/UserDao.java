@@ -130,7 +130,7 @@ public class UserDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}
 	
 	// 유저 아이디 중복검사
@@ -182,9 +182,8 @@ public class UserDao {
 			ps = conn.prepareStatement(sb.toString());
 			ps.setString(1, userEmail);
 			rs = ps.executeQuery();
-			if(rs.next())
-			{
-			cnt = rs.getInt("CNT");
+			if(rs.next()){
+				cnt = rs.getInt("CNT");
 			}
 		} catch (SQLException e) {
 			logger.error("[UserDao]userEmailIsDuplicated SQLException", e);
@@ -224,7 +223,7 @@ public class UserDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}
 	
 	// 유저 회원 탈퇴('Y'를 'N'으로 변경)
@@ -250,6 +249,6 @@ public class UserDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}
 }

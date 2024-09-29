@@ -16,14 +16,14 @@ public class FreeBbsRecomDao {
 	public static Logger getLogger() {return logger;}
 	public static void setLogger(Logger logger) {FreeBbsRecomDao.logger = logger;}
 	
-	// 게시글을 추천 가능한지 여부 탐색
-	public boolean canRecom(String userId, long freeBbsSeq) {
+	// 게시글을 추천할 수 있는지 여부 가져오기
+	public boolean isValid(String userId, long freeBbsSeq) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT COUNT(USER_ID, FREE_BBS_SEQ) CNT ")
+		sb.append("SELECT COUNT(*) CNT ")
 		  .append("FROM FREE_BBS_RECOM ")
 		  .append("WHERE USER_ID = ? AND FREE_BBS_SEQ = ?");
 		
@@ -43,9 +43,39 @@ public class FreeBbsRecomDao {
 			DBManager.close(rs, ps, conn);
 		}
 				
-		return (cnt == 0) ? true : false;
+		return (cnt == 0);
 	}
 	
+	public int getFreeBbsRecomCnt(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT(*) CNT ")
+		  .append("FROM FREE_BBS_RECOM ")
+		  .append("WHERE FREE_BBS_SEQ = ?");
+		
+		int cnt = 0;
+		
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsSeq);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				cnt = rs.getInt("CNT");
+			}
+		} catch (SQLException e) {
+			logger.error("[FreeBbsRecomDao]getFreeBbsRecomCnt SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+				
+		return cnt;
+	}
+	
+
 	// 게시글 추천수 증가 
 	public boolean freeBbsRecomInsert(String userId, long freeBbsSeq) {
 		Connection conn = null;
@@ -69,7 +99,7 @@ public class FreeBbsRecomDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 		
 	}
 	
@@ -95,6 +125,6 @@ public class FreeBbsRecomDao {
 			DBManager.close(ps, conn);
 		}
 		
-		return (cnt == 1) ? true : false;
+		return (cnt == 1);
 	}
 }

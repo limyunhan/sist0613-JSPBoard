@@ -116,8 +116,8 @@ String freeBbsContent = StringUtil.nvl(HttpUtil.get(request, "freeBbsContent"));
       <div class="form-group row">
          <div class="col-sm-12">
             <div class="d-flex justify-content-end mt-4">
-            <button type="button" id="btnWrite" class="btn btn-outline-primary me-2" title="저장" style="background-color: #3f51b5;">작성</button>
-            <button type="button" id="btnList" class="btn btn-outline-primary" title="리스트">리스트</button>
+            <button type="button" id="btnWrite" class="btn btn-outline-primary me-2" title="저장" style="background-color: #3f51b5;"><i class="fa-sharp-duotone fa-solid fa-file-pen"></i> 작성</button>
+            <button type="button" id="btnList" class="btn btn-outline-primary" title="리스트"><i class="fa-sharp-duotone fa-solid fa-list"></i> 리스트</button>
             </div>
          </div>
       </div>

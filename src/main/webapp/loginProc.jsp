@@ -16,8 +16,6 @@ String userPwd = HttpUtil.get(request, "userPwd");
 String msg;
 String icon = "warning";
 String redirectUrl = "/";
-String previousUrl = (String)session.getAttribute("previousUrl");
-session.removeAttribute("previousUrl");
 
 if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 	UserDao userDao = new UserDao();
@@ -28,7 +26,6 @@ if (!StringUtil.isEmpty(userId) && !StringUtil.isEmpty(userPwd)) {
 				CookieUtil.addCookie(response, "/", "USER_ID", userId);
 				msg = "로그인 성공";
 				icon = "success";
-				redirectUrl = !StringUtil.isEmpty(previousUrl) ? previousUrl : "/";
 			} else {
 				msg = "탈퇴한 사용자입니다.";
 				session.setAttribute("openLoginModal", "1");

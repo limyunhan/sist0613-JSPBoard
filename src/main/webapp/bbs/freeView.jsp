@@ -7,105 +7,265 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="com.sist.web.dao.FreeBbsDao"%>
+<%@ page import="com.sist.web.dao.FreeBbsComDao" %>
+<%@ page import="com.sist.web.model.FreeBbsCom" %>
 <%@ page import="com.sist.web.model.FreeBbs"%>
 <%
-	Logger logger = LogManager.getLogger("freeView.jsp");
-	HttpUtil.requestLogString(request, logger);
-	
-	String cookieUserId = CookieUtil.getValue(request, "USER_ID");
-	String searchType = HttpUtil.get(request, "searchType", "");
-	String searchValue = HttpUtil.get(request, "searchValue", "");
-	long curPage = HttpUtil.get(request, "curPage", 1L);
-	long freeBbsSeq = HttpUtil.get(request, "freeBbsSeq", 0L);
-	
-	FreeBbsDao freeBbsDao = new FreeBbsDao();
-	FreeBbs freeBbs = freeBbsDao.freeBbsSelect(freeBbsSeq);
-	if(freeBbs != null) {
-		freeBbsDao.freeBbsReadCntPlus(freeBbsSeq);
-	}
+Logger logger = LogManager.getLogger("freeView.jsp");
+HttpUtil.requestLogString(request, logger);
+
+long freeBbsSeq = HttpUtil.get(request, "freeBbsSeq", 0L);
+if (freeBbsSeq == 0L) {
+    response.sendRedirect("/bbs/freeList.jsp");
+} else {
+    String cookieUserId = CookieUtil.getValue(request, "USER_ID");
+    String searchType = HttpUtil.get(request, "searchType", "");
+    String searchValue = HttpUtil.get(request, "searchValue", "");
+    long curPage = HttpUtil.get(request, "curPage", -1L);
+
+    FreeBbsDao freeBbsDao = new FreeBbsDao();
+    FreeBbs freeBbs = freeBbsDao.freeBbsSelect(freeBbsSeq);
+    if (freeBbs != null && StringUtil.equals(freeBbs.getFreeBbsStatus(), "Y")) {
+        freeBbs.setFreeBbsReadCnt(freeBbsDao.getFreeBbsReadCnt(freeBbsSeq));
+    }
+    
+    FreeBbsComDao freeBbsComDao = new FreeBbsComDao();
+    long totalCom = freeBbsDao.freeBbsTotalPost(search);
+    long curPage = HttpUtil.get(request, "curPage", 1L);
+
+    Paging paging = null;
+    List<FreeBbs> list = null;
+
+    if(totalPost > 0) {
+        paging = new Paging(totalPost, PageConfig.NUM_OF_PAGE_PER_BLOCK, PageConfig.NUM_OF_POST_PER_PAGE, curPage);
+        search.setStartPost(paging.getStartPost());
+        search.setEndPost(paging.getEndPost());
+        list = freeBbsDao.freeBbsList(search);
+        logger.debug("list size() : " + list.size());
+    }
+    
+    
+    
 %>
 <!DOCTYPE html>
 <html>
 <head>
 <%@ include file="/include/header.jsp"%>
 </head>
+<script>
+    $(document).ready(function() {
+<%
+        if (freeBbs == null || StringUtil.equals(freeBbs.getFreeBbsStatus(), "N")) {
+%>
+            Swal.fire({
+                title: "조회하신 게시물이 존재하지 않습니다.",
+                icon: "warning",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "확인",
+            }).then(result => {
+                if (result.isConfirmed) {
+                    document.bbsForm.action = "/bbs/freeList.jsp";
+                    document.bbsForm.submit();
+                }
+            });
+<%
+        } else {
+%>
+            <% if (!StringUtil.isEmpty(cookieUserId)) { %>
+            $.ajax({
+                type: "POST",
+                url: "/bbs/recomCheckInitAjax.jsp",
+                data: {
+                    userId: "<%= cookieUserId %>",
+                    freeBbsSeq: <%= freeBbsSeq %>
+                },
+                dataType: "JSON",
+                success: function(obj) {
+                    if (obj.flag) {
+                        $("#btnRecom").html("<i class='fas fa-thumbs-up'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
+                    } else {
+                        $("#btnRecom").html("<i class='fas fa-thumbs-up' style='color: blue;'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire({
+                        title: "오류",
+                        text: "서버 응답 오류가 발생했습니다. 관리자에게 문의하세요.",
+                        icon: "error",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "확인"
+                    });
+                }
+            });
+            <% } %>
+
+            $("#btnList").on("click", function() {
+                document.bbsForm.action = "/bbs/freeList.jsp";
+                document.bbsForm.submit();
+            });
+
+            $("#btnRecom").on("click", function() {
+<%
+                if (StringUtil.isEmpty(cookieUserId)) {
+%>
+                    Swal.fire({
+                        title: "오류",
+                        text: "비로그인 추천은 제한되어 있습니다.",
+                        icon: "error",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "확인"
+                    });
+<%
+                } else {
+%>
+                    $.ajax({
+                        type: "POST",
+                        url: "/bbs/recomCheckAjax.jsp",
+                        data: {
+                            userId: "<%= cookieUserId %>",
+                            freeBbsSeq: <%= freeBbsSeq %>
+                        },
+                        dataType: "JSON",
+                        success: function(obj) {
+                            if (obj.flag) {
+                                Swal.fire({
+                                    title: "추천을 완료했습니다!",
+                                    icon: "success",
+                                    confirmButtonColor: "#3085d6",
+                                    confirmButtonText: "확인",
+                                });
+                                $("#btnRecom").html("<i class='fas fa-thumbs-up' style='color: blue;'></i> 추천 " + obj.newCount);
+                            } else {
+                                Swal.fire({
+                                    title: "추천을 취소했습니다!",
+                                    icon: "info",
+                                    confirmButtonColor: "#3085d6",
+                                    confirmButtonText: "확인",
+                                });
+                                $("#btnRecom").html("<i class='fas fa-thumbs-up'></i> 추천 " + obj.newCount);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            Swal.fire({
+                                title: "오류",
+                                text: "서버 응답 오류가 발생했습니다. 관리자에게 문의하세요.",
+                                icon: "error",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "확인"
+                            });
+                        }
+                    });
+<%
+                }
+%>
+            });
+
+<%
+            if (StringUtil.equals(cookieUserId, freeBbs.getUserId())) {
+%>
+                $("#btnUpdate").on("click", function() {
+                    document.bbsForm.action = "/bbs/freeUpdate.jsp";
+                    document.bbsForm.submit();
+                });
+
+                $("#btnDelete").on("click", function() {
+                    Swal.fire({
+                        title: "게시글을 수정하시겠습니까?",
+                        icon: "success",
+                        showCancelButton: true,
+                        cancelButtonColor: "#3f51b5",
+                        confirmButtonColor: "#3085d6",
+                        confirmButtonText: "확인",
+                        cancelButtonText: "취소",
+                        reverseButtons: true,
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            document.updateForm.submit();
+                        }
+                    });
+                });
+<%
+            }
+        }
+%>
+    });
+</script>
 <body>
-<%@include file="/include/navigation.jsp"%>
+<%@ include file="/include/navigation.jsp"%>
 <div class="container mt-5">
-	<h2>게시물 보기</h2>
-	<div class="row" style="margin-right: 0; margin-left: 0;">
-		<table class="table table-hover">
-			<thead>
-				<tr class="table-active">
-					<th scope="col" style="width: 60%"><%= freeBbs.getFreeBbsTitle() %><br>작성자 : <%= freeBbs.getUserName() %></th>
-					<th scope="col" style="width: 40%" class="text-end">
-						조회수 : <%= StringUtil.toNumberFormat(freeBbs.getFreeBbsReadCnt()) %><br>
-						작성일 : <%= freeBbs.getRegDate() %><br>
-						<% if (!StringUtil.isEmpty(freeBbs.getUpdateDate())) { %>
-						수정일 : <%= freeBbs.getUpdateDate() %>
-						<% } %>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td colspan="2"><pre style="white-space: pre-wrap;"></pre>
-					</td>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="2"></td>
-				</tr>
-			</tfoot>
-		</table>
-	</div>
-	<div class="d-flex">
-		<button type="button" id="btnList" class="btn btn-outline-primary me-2">리스트</button>
-		<% if(StringUtil.equals(cookieUserId, freeBbs.getUserId())) { %>
-		<button type="button" id="btnUpdate" class="btn btn-outline-primary me-2">수정</button>
-		<button type="button" id="btnDelete" class="btn btn-outline-primary">삭제</button>
-		<% } %>
-	</div>
-	<hr>
-	<div class="comments-section mt-4">
-		<h5>댓글()</h5>
-		<div class="card mb-3">
-			<div class="card-body">
-				<h6 class="card-title">댓글 작성자: 김철수</h6>
-				<p class="card-text">이 게시물은 정말 유익했습니다! 감사합니다.</p>
-				<p class="card-text">
-					<small class="text-muted">2024-09-20 12:34</small>
-				</p>
-			</div>
-		</div>
-		<div class="card mb-3">
-			<div class="card-body">
-				<h6 class="card-title">댓글 작성자: 이영희</h6>
-				<p class="card-text">좋은 정보 공유해주셔서 감사합니다.</p>
-				<p class="card-text">
-					<small class="text-muted">2024-09-20 14:20</small>
-				</p>
-			</div>
-		</div>
-		<!-- 댓글 입력 폼 -->
-		<div class="mt-4">
-			<form name="" action="" method="post">
-				<div class="mb-3">
-					<label for="commentText" class="form-label">댓글 내용</label>
-					<textarea class="form-control" id="commentText" rows="3" placeholder="댓글을 입력하세요."></textarea>
-				</div>
-				<button type="submit" class="btn btn-primary">댓글 작성</button>
-			</form>
-		</div>
-	</div>
+    <h2>게시물 보기</h2>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr class="table-active">
+                    <th scope="col" style="width: 60%; word-wrap: break-word;">
+                        <%= freeBbs.getFreeBbsTitle() %><br>
+                        <small class="text-body">작성자: <%= freeBbs.getUserName() %></small>
+                    </th>
+                    <th scope="col" style="width: 40%;" class="text-end">
+                        <small class="text-body">조회수: <%= StringUtil.toNumberFormat(freeBbs.getFreeBbsReadCnt()) %><br></small>
+                        <small class="text-body">작성일: <%= freeBbs.getRegDate() %>&nbsp;</small>
+                        <% if (!StringUtil.isEmpty(freeBbs.getUpdateDate())) { %>
+                            <small class="text-body">수정일: <%= freeBbs.getUpdateDate() %></small>
+                        <% } %>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        <pre><%= StringUtil.replace(freeBbs.getFreeBbsContent(), "\n", "<br>") %></pre>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 추천 박스 -->
+    <div class="d-flex justify-content-center align-items-center my-3">
+        <!-- 추천 버튼 -->
+        <button type="button" id="btnRecom" class="btn btn-success">
+            <i class='fas fa-thumbs-up'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>
+        </button>
+    </div>
+    <!-- 댓글 섹션 -->
+    <hr>
+    <div class="comments-section mt-4">
+        <h5>댓글</h5>
+
+        <!-- 댓글 목록 -->
+<% 
+		FreeBbsComDao freeBbsComDao = new FreeBbsComDao();
+        List<freeBbsCom> list = freeBbsComDao.freeBbsComList(freeBbsSeq, startCom, endCom);
+        for (Comment comment : comments) {
+%>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">댓글 작성자: <%= comment.getUserName() %></h6>
+                    <p class="card-text"><%= comment.getCommentText() %></p>
+                    <p class="card-text">
+                        <small class="text-muted"><%= comment.getRegDate() %></small>
+                    </p>
+                </div>
+            </div>
+        <%
+        }
+        %>
+        
+        <!-- 댓글 작성 폼 -->
+        <div class="mb-3">
+            <h6>댓글 작성</h6>
+            <form id="commentForm">
+                <div class="form-group">
+                    <textarea class="form-control" id="commentText" rows="3" placeholder="댓글을 작성하세요"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
+            </form>
+        </div>
+    </div>
 </div>
-<%@include file="/include/footer.jsp"%>
-<form name="bbsForm" action="" method="post">
-      <input type="hidden" id="searchType" name="searchType" value="<%= searchType %>">
-      <input type="hidden" id="searchValue" name="searchValue" value="<%= searchValue %>">
-      <input type="hidden" id="curPage" name="curPage" value="<%= curPage %>">
-      <input type="hidden" id="freebbsSeq" name="freeBbsSeq" value="<%= freeBbsSeq %>">
-</form>
 </body>
 </html>
+<%
+}
+%>
