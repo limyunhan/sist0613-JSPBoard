@@ -132,7 +132,7 @@ if(totalPost > 0) {
                     </div>
                 </div>
                 <div class="card-body d-flex flex-column">
-                    <table class="table table-light">
+                    <table class="table table-info">
                         <thead class="thead-dark">
                             <tr>
                                 <th scope="col" class="text-center" style="width: 10%">번호</th>
@@ -150,9 +150,15 @@ if(totalPost > 0) {
                             while(iterator.hasNext()) {
                                 FreeBbs freeBbs = iterator.next();
 %>
-                                <tr>
+                                <tr class="table-light">
                                     <th scope="row" class="text-center"><%= freeBbs.getFreeBbsSeq() %></th>
-                                    <td class="text-center"><a href="javascript:void(0)" onclick="view(<%= freeBbs.getFreeBbsSeq() %>)"><%= freeBbs.getFreeBbsTitle() %></a></td>
+                                    <td class="text-center">
+                                    	<a href="javascript:void(0)" onclick="view(<%= freeBbs.getFreeBbsSeq() %>)"><%= freeBbs.getFreeBbsTitle() %>
+                                    	<% if (freeBbs.getFreeBbsComCnt() != 0) { %>
+                                    	(<span style="color: blue;"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsComCnt()) %></span>)
+                                    	</a>
+                                    	<% } %>
+                                    </td>
                                     <td class="text-center"><%= freeBbs.getUserName() %></td>
                                     <td class="text-center"><%= freeBbs.getRegDate() %></td>
                                     <td class="text-center"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsReadCnt()) %></td>

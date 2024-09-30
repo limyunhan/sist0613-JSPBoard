@@ -13,6 +13,7 @@ public class FreeBbs implements Serializable {
 	private String freeBbsContent;
 	private int freeBbsReadCnt;
 	private int freeBbsRecomCnt;
+	private int freeBbsComCnt;
 	private String freeBbsStatus;
 	private String regDate;
 	private String updateDate;
@@ -32,6 +33,8 @@ public class FreeBbs implements Serializable {
 	public void setFreeBbsReadCnt(int freeBbsReadCnt) {this.freeBbsReadCnt = freeBbsReadCnt;}
 	public int getFreeBbsRecomCnt() {return freeBbsRecomCnt;}
 	public void setFreeBbsRecomCnt(int freeBbsRecomCnt) {this.freeBbsRecomCnt = freeBbsRecomCnt;}
+	public int getFreeBbsComCnt() {return freeBbsComCnt;}
+	public void setFreeBbsComCnt(int freeBbsComCnt) {this.freeBbsComCnt = freeBbsComCnt;}
 	public String getFreeBbsStatus() {return freeBbsStatus;}
 	public void setFreeBbsStatus(String freeBbsStatus) {this.freeBbsStatus = freeBbsStatus;}
 	public String getRegDate() {return regDate;}

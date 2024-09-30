@@ -161,7 +161,7 @@ public class UserDao {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt != 0) ? true : false;
+		return (cnt != 0);
 	}
 	
 	// 유저 이메일 중복검사
@@ -191,7 +191,7 @@ public class UserDao {
 			DBManager.close(rs, ps, conn);
 		}
 
-		return (cnt != 0) ? true : false;
+		return (cnt != 0);
 	}
 	
 	// 유저 정보 업데이트

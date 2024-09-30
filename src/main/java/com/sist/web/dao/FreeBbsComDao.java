@@ -20,28 +20,30 @@ public class FreeBbsComDao {
 	public static void setLogger(Logger logger) {FreeBbsComDao.logger = logger;}
 	
 	// 댓글 계층 구조 적용한채로 리스트로 가져오기
-	public List<FreeBbsCom> freeBbsComList(long freeBbsSeq, int startCom, int endCom) {
+	public List<FreeBbsCom> freeBbsComList(FreeBbsCom search) {
 		List<FreeBbsCom> list = new ArrayList<>();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT FREE_BBS_COM_SEQ, FREE_BBS_SEQ, USER_ID, FREE_BBS_COM_CONTENT, FREE_BBS_COM_STATUS, REG_DATE, REF, RE_STEP, RE_LEVEL ")
+		sb.append("SELECT FREE_BBS_COM_SEQ, FREE_BBS_SEQ, USER_ID, FREE_BBS_COM_CONTENT, FREE_BBS_COM_STATUS, REG_DATE, REF, RE_STEP, RE_LEVEL, USER_NAME ")
 		  .append("FROM ( ")
-		  	.append("SELECT ROWNUM NUM, FREE_BBS_COM_SEQ, FREE_BBS_SEQ, USER_ID, FREE_BBS_COM_CONTENT, FREE_BBS_COM_STATUS, REG_DATE, REF, RE_STEP, RE_LEVEL ")
+		  	.append("SELECT ROWNUM NUM, FREE_BBS_COM_SEQ, FREE_BBS_SEQ, USER_ID, FREE_BBS_COM_CONTENT, FREE_BBS_COM_STATUS, REG_DATE, REF, RE_STEP, RE_LEVEL, USER_NAME ")
 		  		.append("FROM ( ")
-		  			.append("SELECT FREE_BBS_COM_SEQ, ")
-		  				.append("FREE_BBS_SEQ, ")
-		  				.append("NVL(USER_ID, '') USER_ID, ")
-		  				.append("NVL(FREE_BBS_COM_CONTENT, '') FREE_BBS_COM_CONTENT, ")
-		  				.append("NVL(FREE_BBS_COM_STATUS, 'N') FREE_BBS_COM_STATUS, ")
-		  				.append("NVL(TO_CHAR(REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
-		  				.append("NVL(REF, 0) REF, ")
-		  				.append("NVL(RE_STEP, 0) RE_STEP, ")
-		  				.append("NVL(RE_LEVEL, 0) RE_LEVEL ")
-				.append("FROM FREE_BBS_COM ")
-				.append("WHERE FREE_BBS_SEQ = ? ")
+		  			.append("SELECT A.FREE_BBS_COM_SEQ FREE_BBS_COM_SEQ, ")
+		  				.append("A.FREE_BBS_SEQ FREE_BBS_SEQ, ")
+		  				.append("NVL(A.USER_ID, '') USER_ID, ")
+		  				.append("NVL(A.FREE_BBS_COM_CONTENT, '') FREE_BBS_COM_CONTENT, ")
+		  				.append("NVL(A.FREE_BBS_COM_STATUS, 'N') FREE_BBS_COM_STATUS, ")
+		  				.append("NVL(TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
+		  				.append("NVL(A.REF, 0) REF, ")
+		  				.append("NVL(A.RE_STEP, 0) RE_STEP, ")
+		  				.append("NVL(A.RE_LEVEL, 0) RE_LEVEL, ")
+		  				.append("NVL(B.USER_NAME, '') USER_NAME ")
+				.append("FROM FREE_BBS_COM A, USERS B ")
+				.append("WHERE FREE_BBS_SEQ = ? AND ")
+				.append("A.USER_ID = B.USER_ID ")
 				.append("ORDER BY REF, RE_STEP ")
 			.append(") ")
 		.append(") ")
@@ -53,9 +55,9 @@ public class FreeBbsComDao {
 			ps = conn.prepareStatement(sb.toString());
 			
 			int idx = 0;
-			ps.setLong(++idx, freeBbsSeq);
-			ps.setLong(++idx, startCom);
-			ps.setLong(++idx, endCom);
+			ps.setLong(++idx, search.getFreeBbsSeq());
+			ps.setLong(++idx, search.getStartCom());
+			ps.setLong(++idx, search.getEndCom());
 			rs = ps.executeQuery();
 			
 			while (rs.next()) {
@@ -69,6 +71,7 @@ public class FreeBbsComDao {
 		        freeBbsCom.setRef(rs.getLong("REF"));
 		        freeBbsCom.setReStep(rs.getInt("RE_STEP"));
 		        freeBbsCom.setReLevel(rs.getInt("RE_LEVEL"));
+		        freeBbsCom.setUserName(rs.getString("USER_NAME"));
 		        list.add(freeBbsCom);
 			}
 		} catch (SQLException e) {
@@ -80,13 +83,63 @@ public class FreeBbsComDao {
 		return list;
 	}
 	
+	// 단일 댓글 조회
+	public FreeBbsCom freeBbsComSelect(long freeBbsComSeq) {
+		FreeBbsCom freeBbsCom = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT A.FREE_BBS_COM_SEQ FREE_BBS_COM_SEQ, ")
+	      .append("A.FREE_BBS_SEQ FREE_BBS_SEQ, ")
+	      .append("NVL(A.USER_ID, '') USER_ID, ")
+	      .append("NVL(A.FREE_BBS_COM_CONTENT, '') FREE_BBS_COM_CONTENT, ")
+	      .append("NVL(A.FREE_BBS_COM_STATUS, 'N') FREE_BBS_COM_STATUS, ")
+	      .append("NVL(TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
+	      .append("NVL(A.REF, 0) REF, ")
+	      .append("NVL(A.RE_STEP, 0) RE_STEP, ")
+	      .append("NVL(A.RE_LEVEL, 0) RE_LEVEL, ")
+	      .append("NVL(B.USER_NAME, '') USER_NAME ")
+		  .append("FROM FREE_BBS_COM A, USERS B ")
+	      .append("WHERE A.FREE_BBS_COM_SEQ = ? AND ")
+	  	  .append("A.USER_ID = B.USER_ID");
+		
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsComSeq);
+			rs = ps.executeQuery();
+			if(rs.next()) {
+				freeBbsCom = new FreeBbsCom();
+		        freeBbsCom.setFreeBbsComSeq(rs.getLong("FREE_BBS_COM_SEQ"));
+		        freeBbsCom.setFreeBbsSeq(rs.getLong("FREE_BBS_SEQ"));
+		        freeBbsCom.setUserId(rs.getString("USER_ID"));
+		        freeBbsCom.setFreeBbsComContent(rs.getString("FREE_BBS_COM_CONTENT"));
+		        freeBbsCom.setFreeBbsComStatus(rs.getString("FREE_BBS_COM_STATUS"));
+		        freeBbsCom.setRegDate(rs.getString("REG_DATE"));
+		        freeBbsCom.setRef(rs.getLong("REF"));
+		        freeBbsCom.setReStep(rs.getInt("RE_STEP"));
+		        freeBbsCom.setReLevel(rs.getInt("RE_LEVEL"));
+		        freeBbsCom.setUserName(rs.getString("USER_NAME"));
+			}
+		} catch (SQLException e) {
+			logger.error("[FreeBbsComDao]freeBbsComSelect SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+		
+		return freeBbsCom;
+	}
+	
+	
 	// 댓글 번호 가져오기
 	public long nextFreeBbsComSeq(Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT FREE_BBS_COM_SEQ.NEXTVAL FROM DUAL ");
+		sb.append("SELECT FREE_BBS_COM_SEQ.NEXTVAL FROM DUAL");
 		
 		long freeBbsComSeq = 0;
 		
@@ -251,5 +304,29 @@ public class FreeBbsComDao {
 	    return (cnt == 1); // 삭제 성공 시 true 반환
 	}	
 	
-	// 
+	// 페이징 처리를 위한 게시글의 전체 댓글 수 조회
+	public int getFreeBbsComCnt(long freeBbsSeq) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT(FREE_BBS_COM_SEQ) CNT FROM FREE_BBS_COM WHERE FREE_BBS_SEQ = ? ");
+		
+		int freeBbsComCnt = 0;
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			ps.setLong(1, freeBbsSeq);
+			rs = ps.executeQuery();
+			rs.next();
+			freeBbsComCnt = rs.getInt("CNT");	
+		} catch (SQLException e) {
+			logger.error("[FreeBbsComDao]getFreeBbsComCnt SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+		
+		return freeBbsComCnt;
+	}
 }

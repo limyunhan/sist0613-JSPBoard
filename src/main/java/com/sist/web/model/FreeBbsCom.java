@@ -19,6 +19,7 @@ public class FreeBbsCom implements Serializable {
 	private int reLevel; // 댓글 깊이
 	private long startCom;
 	private long endCom;
+	private String userName;
 	
 	public long getFreeBbsComSeq() {return freeBbsComSeq;}
 	public void setFreeBbsComSeq(long freeBbsComSeq) {this.freeBbsComSeq = freeBbsComSeq;}
@@ -26,6 +27,8 @@ public class FreeBbsCom implements Serializable {
 	public void setFreeBbsSeq(long freeBbsSeq) {this.freeBbsSeq = freeBbsSeq;}
 	public String getUserId() {return userId;}
 	public void setUserId(String userId) {this.userId = userId;}
+	public String getUserName() {return userName;}
+	public void setUserName(String userName) {this.userName = userName;}
 	public String getFreeBbsComContent() {return freeBbsComContent;}
 	public void setFreeBbsComContent(String freeBbsComContent) {this.freeBbsComContent = freeBbsComContent;}
 	public String getFreeBbsComStatus() {return freeBbsComStatus;}
@@ -42,11 +45,13 @@ public class FreeBbsCom implements Serializable {
 	public void setStartCom(long startCom) {this.startCom = startCom;}
 	public long getEndCom() {return endCom;}
 	public void setEndCom(long endCom) {this.endCom = endCom;}
+
 	
 	public FreeBbsCom() {
 		setFreeBbsComSeq(0);
 		setFreeBbsSeq(0);
 		setUserId("");
+		setUserName("");
 		setFreeBbsComContent("");
 		setFreeBbsComStatus("");
 		setRegDate("");
@@ -56,4 +61,5 @@ public class FreeBbsCom implements Serializable {
 		setStartCom(0);
 		setEndCom(0);
 	}
+
 }

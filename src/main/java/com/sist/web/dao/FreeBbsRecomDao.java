@@ -35,15 +35,16 @@ public class FreeBbsRecomDao {
 			ps.setString(1, userId);
 			ps.setLong(2, freeBbsSeq);
 			rs = ps.executeQuery();
-			rs.next();
-			cnt = rs.getInt("CNT");
+			if(rs.next()) {
+				cnt = rs.getInt("CNT");
+			}
 		} catch (SQLException e) {
 			logger.error("[FreeBbsRecomDao]isRecomValid SQLException", e);
 		} finally {
 			DBManager.close(rs, ps, conn);
 		}
 				
-		return (cnt == 0);
+		return (cnt == 0) ? true : false;
 	}
 	
 	public int getFreeBbsRecomCnt(long freeBbsSeq) {

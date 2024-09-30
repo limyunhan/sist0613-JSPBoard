@@ -28,9 +28,9 @@ public class FreeBbsDao {
 		ResultSet rs = null;
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, REG_DATE, USER_NAME ")
+		sb.append("SELECT FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_COM_CNT, REG_DATE, USER_NAME ")
 		  .append("FROM ( ")
-		      .append("SELECT ROWNUM NUM, FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, REG_DATE, USER_NAME ")
+		      .append("SELECT ROWNUM NUM, FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_COM_CNT, REG_DATE, USER_NAME ")
 		      .append("FROM ( ")
 		          .append("SELECT ")
 		              .append("A.FREE_BBS_SEQ FREE_BBS_SEQ, ")
@@ -39,12 +39,16 @@ public class FreeBbsDao {
 		              .append("NVL(A.FREE_BBS_CONTENT, '') FREE_BBS_CONTENT, ")
 		              .append("NVL(A.FREE_BBS_READ_CNT, 0) FREE_BBS_READ_CNT, ")
 		              .append("NVL(RC.CNT, 0) FREE_BBS_RECOM_CNT, ")
+		              .append("NVL(C.CNT, 0) FREE_BBS_COM_CNT, ")
 		              .append("NVL(TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
 		              .append("NVL(B.USER_NAME, '') USER_NAME ")
 		          .append("FROM FREE_BBS A, USERS B, ")
 		          .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_SEQ) CNT ") 
 		          .append("FROM FREE_BBS_RECOM ") 
-		          .append("GROUP BY FREE_BBS_SEQ) RC ")
+		          .append("GROUP BY FREE_BBS_SEQ) RC, ")
+		          .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_COM_SEQ) CNT ")
+		          .append("FROM (SELECT * FROM FREE_BBS_COM WHERE FREE_BBS_COM_STATUS <> 'N') ")
+		          .append("GROUP BY FREE_BBS_SEQ) C ")
 		          .append("WHERE A.FREE_BBS_STATUS <> 'N' AND ");
 		
 		if(search != null) {
@@ -57,7 +61,8 @@ public class FreeBbsDao {
 			}
 		}
 		        sb.append("A.USER_ID = B.USER_ID AND ") 
-		          .append("A.FREE_BBS_SEQ = RC.FREE_BBS_SEQ(+)")
+		          .append("A.FREE_BBS_SEQ = RC.FREE_BBS_SEQ(+) AND ")
+		          .append("A.FREE_BBS_SEQ = C.FREE_BBS_SEQ(+) ")
 		          .append("ORDER BY A.FREE_BBS_SEQ DESC ")
 		      .append(") ") 
 		  .append(") ")
@@ -92,6 +97,7 @@ public class FreeBbsDao {
 	            freeBbs.setFreeBbsContent(rs.getString("FREE_BBS_CONTENT"));
 	            freeBbs.setFreeBbsReadCnt(rs.getInt("FREE_BBS_READ_CNT"));
 	            freeBbs.setFreeBbsRecomCnt(rs.getInt("FREE_BBS_RECOM_CNT"));
+	            freeBbs.setFreeBbsComCnt(rs.getInt("FREE_BBS_COM_CNT"));
 	            freeBbs.setFreeBbsStatus("Y");
 	            freeBbs.setRegDate(rs.getString("REG_DATE"));
 	            freeBbs.setUserName(rs.getString("USER_NAME"));
@@ -172,15 +178,20 @@ public class FreeBbsDao {
 		  .append("NVL(A.FREE_BBS_CONTENT, '') FREE_BBS_CONTENT, ")
 		  .append("NVL(A.FREE_BBS_READ_CNT, 0) FREE_BBS_READ_CNT, ")
 		  .append("NVL(RC.CNT, 0) FREE_BBS_RECOM_CNT, ")
+		  .append("NVL(C.CNT, 0) FREE_BBS_COM_CNT, ")
 		  .append("NVL(A.FREE_BBS_STATUS, 'N') FREE_BBS_STATUS, ")
 		  .append("NVL(TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
 		  .append("NVL(TO_CHAR(A.UPDATE_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') UPDATE_DATE, ")
 		  .append("NVL(B.USER_NAME, '') USER_NAME ")
 		  .append("FROM FREE_BBS A, USERS B, ")
-		  .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_SEQ) CNT FROM FREE_BBS_RECOM GROUP BY FREE_BBS_SEQ) RC ")
+		  .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_SEQ) CNT FROM FREE_BBS_RECOM GROUP BY FREE_BBS_SEQ) RC, ")
+		  .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_COM_SEQ) CNT ")
+		  .append("FROM (SELECT * FROM FREE_BBS_COM WHERE FREE_BBS_COM_STATUS <> 'N') ")
+		  .append("GROUP BY FREE_BBS_SEQ) C ")
 		  .append("WHERE A.FREE_BBS_SEQ = ? AND ")
 		  .append("A.USER_ID = B.USER_ID AND ")
-		  .append("A.FREE_BBS_SEQ = RC.FREE_BBS_SEQ(+)");
+		  .append("A.FREE_BBS_SEQ = RC.FREE_BBS_SEQ(+) AND ")
+		  .append("A.FREE_BBS_SEQ = C.FREE_BBS_SEQ(+)");
 		
 		try {
 			conn = DBManager.getConnection();
@@ -196,6 +207,7 @@ public class FreeBbsDao {
 				freeBbs.setFreeBbsContent(rs.getString("FREE_BBS_CONTENT"));
 				freeBbs.setFreeBbsReadCnt(rs.getInt("FREE_BBS_READ_CNT"));
 				freeBbs.setFreeBbsRecomCnt(rs.getInt("FREE_BBS_RECOM_CNT"));
+	            freeBbs.setFreeBbsComCnt(rs.getInt("FREE_BBS_COM_CNT"));
 				freeBbs.setFreeBbsStatus(rs.getString("FREE_BBS_STATUS"));
 				freeBbs.setRegDate(rs.getString("REG_DATE"));
 				freeBbs.setUpdateDate(rs.getString("UPDATE_DATE"));
@@ -302,12 +314,11 @@ public class FreeBbsDao {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE FREE_BBS ")
-		  .append("SET FREE_BBS_READ_CNT = FREE_BBS_READ_CNT + 1")
+		  .append("SET FREE_BBS_READ_CNT = FREE_BBS_READ_CNT + 1 ")
 		  .append("WHERE FREE_BBS_SEQ = ?");
 		
 		int cnt = 0;
 		try {
-			conn = DBManager.getConnection();
 			ps = conn.prepareStatement(sb.toString());
 			ps.setLong(1, freeBbsSeq);
 			cnt = ps.executeUpdate();

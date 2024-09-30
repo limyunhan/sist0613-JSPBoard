@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.sist.web.model.FreeBbs"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="com.sist.web.dao.FreeBbsDao"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,6 +10,14 @@
 <%
 	String openLoginModal = (String)session.getAttribute("openLoginModal");
 	session.removeAttribute("openLoginModal");
+	
+	List<FreeBbs> list = null;
+	FreeBbs search = new FreeBbs();
+	search.setStartPost(1);
+	search.setEndPost(5);
+	
+	FreeBbsDao freeBbsDao = new FreeBbsDao();
+	list = freeBbsDao.freeBbsList(search);
 %>
 <script>
 	$(document).ready(function(){
@@ -25,6 +37,12 @@
 		} 
 %>
 	});
+	
+    function view(freeBbsSeq) {
+        $("#freeBbsSeq").val(freeBbsSeq);
+        document.bbsForm.action = "/bbs/freeView.jsp";
+        document.bbsForm.submit();
+    }
 </script>
 
 <style>
@@ -95,36 +113,44 @@
                     <div class="table-responsive">
                         <table class="table table-info">
                             <thead>
-                                <tr>
-                                    <th scope="col">번호</th>
-                                    <th scope="col">제목</th>
-                                    <th scope="col">작성자</th>
-                                    <th scope="col">작성일</th>
-                                    <th scope="col">작업</th>
-                                </tr>
+	                            <tr>
+	                                <th scope="col" class="text-center" style="width: 20%">번호</th>
+	                                <th scope="col" class="text-center" style="width: 40%">제목</th>
+	                                <th scope="col" class="text-center" style="width: 20%">작성자</th>
+	                                <th scope="col" class="text-center" style="width: 10%">조회수</th>
+	                                <th scope="col" class="text-center" style="width: 10%">추천</th>
+	                            </tr>
                             </thead>
                             <tbody>
+<%
+                        if(list != null && list.size() > 0) {
+                        	Iterator<FreeBbs> iterator = list.iterator();
+                            while(iterator.hasNext()) {
+                                FreeBbs freeBbs = iterator.next();
+%>
                                 <tr class="table-light">
-                                    <th scope="row">1</th>
-                                    <td>자유 게시판 글 제목 1</td>
-                                    <td>작성자1</td>
-                                    <td>2024-09-19</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
+                                    <th scope="row" class="text-center"><%= freeBbs.getFreeBbsSeq() %></th>
+                                    <td class="text-center">
+                                    	<a href="javascript:void(0)" onclick="view(<%= freeBbs.getFreeBbsSeq() %>)"><%= freeBbs.getFreeBbsTitle() %>
+                                    	<% if (freeBbs.getFreeBbsComCnt() != 0) { %>
+                                    	(<span style="color: blue;"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsComCnt()) %></span>)
+                                    	</a>
+                                    	<% } %>
+                                    </td>
+                                    <td class="text-center"><%= freeBbs.getUserName() %></td>
+                                    <td class="text-center"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsReadCnt()) %></td>
+                                    <td class="text-center"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsRecomCnt()) %></td>
                                 </tr>
-                                <tr class="table-light">
-                                    <th scope="row">2</th>
-                                    <td>자유 게시판 글 제목 2</td>
-                                    <td>작성자2</td>
-                                    <td>2024-09-18</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
-                                </tr>
-                                <tr class="table-light">
-                                    <th scope="row">3</th>
-                                    <td>자유 게시판 글 제목 3</td>
-                                    <td>작성자3</td>
-                                    <td>2024-09-17</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
-                                </tr>
+<%
+                            }
+                        } else {
+%>
+                            <tr>
+                                <td colspan="6" class="text-center">해당 데이터가 존재하지 않습니다.</td>
+                            </tr>
+<%
+                        }
+%>
                             </tbody>
                         </table>
                     </div>
@@ -148,7 +174,6 @@
                                     <th scope="col">제목</th>
                                     <th scope="col">작성자</th>
                                     <th scope="col">작성일</th>
-                                    <th scope="col">작업</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -157,21 +182,18 @@
                                     <td>음식점 게시판 글 제목 1</td>
                                     <td>작성자1</td>
                                     <td>2024-09-19</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
                                 </tr>
                                 <tr class="table-light">
                                     <th scope="row">2</th>
                                     <td>음식점 게시판 글 제목 2</td>
                                     <td>작성자2</td>
                                     <td>2024-09-18</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
                                 </tr>
                                 <tr class="table-light">
                                     <th scope="row">3</th>
                                     <td>음식점 게시판 글 제목 3</td>
                                     <td>작성자3</td>
                                     <td>2024-09-17</td>
-                                    <td><button class="btn btn-outline-light btn-sm">좋아요</button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -201,6 +223,9 @@
         </div>
     </div>
 </div>
+<form name="bbsForm" action="" method="post">
+	<input type="hidden" id="freeBbsSeq" name="freeBbsSeq" value="">
+</form>
 <%@ include file="/include/footer.jsp" %>
 </body>
 </html>
