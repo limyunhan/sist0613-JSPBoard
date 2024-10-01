@@ -17,19 +17,22 @@ Logger logger = LogManager.getLogger("freeView.jsp");
 HttpUtil.requestLogString(request, logger);
 
 long freeBbsSeq = HttpUtil.get(request, "freeBbsSeq", 0L);
+String previousPage = StringUtil.nvl((String)session.getAttribute("previousPage"));
+session.removeAttribute("previousPage");
+
 if (freeBbsSeq == 0L) {
     response.sendRedirect("/bbs/freeList.jsp");
 } else {
     String cookieUserId = CookieUtil.getValue(request, "USER_ID");
     String searchType = HttpUtil.get(request, "searchType", "");
     String searchValue = HttpUtil.get(request, "searchValue", "");
-    long curPage = HttpUtil.get(request, "curPage", -1L);
+    long curPage = HttpUtil.get(request, "curPage", 1L);
 
     FreeBbsDao freeBbsDao = new FreeBbsDao();
     FreeBbs freeBbs = freeBbsDao.freeBbsSelect(freeBbsSeq);
     
-    // 여기가 문제
-    if (freeBbs != null && StringUtil.equals(freeBbs.getFreeBbsStatus(), "Y")) {
+    
+    if (freeBbs != null && StringUtil.equals(freeBbs.getFreeBbsStatus(), "Y") && !previousPage.contains("Com")) {
         freeBbs.setFreeBbsReadCnt(freeBbsDao.getFreeBbsReadCnt(freeBbsSeq));
     }
    
@@ -42,7 +45,7 @@ if (freeBbsSeq == 0L) {
     List<FreeBbsCom> list = null;
     
     if(totalCom > 0) {
-        pagingCom = new PagingCom(totalCom, PageComConfig.NUM_OF_PAGE_PER_BLOCK, PageComConfig.NUM_OF_COM_PER_PAGE, curPage);
+        pagingCom = new PagingCom(totalCom, PageComConfig.NUM_OF_PAGE_PER_BLOCK, PageComConfig.NUM_OF_COM_PER_PAGE, curComPage);
         FreeBbsCom search = new FreeBbsCom();
         search.setFreeBbsSeq(freeBbsSeq);
         search.setStartCom(pagingCom.getStartCom());
@@ -74,51 +77,53 @@ if (freeBbsSeq == 0L) {
             });
 <%
         } else {
+        	if (!StringUtil.isEmpty(cookieUserId)) {
 %>
-            <% if (!StringUtil.isEmpty(cookieUserId)) { %>
-    
-            $.ajax({
-                type: "POST",
-                url: "/bbs/recomCheckInitAjax.jsp",
-                data: {
-                    userId: "<%= cookieUserId %>",
-                    freeBbsSeq: <%= freeBbsSeq %>
-                },
-                dataType: "JSON",
-                success: function(obj) {
-                    if (obj.flag) {
-                        $("#btnRecom").html("<i class='fas fa-thumbs-up'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
-                    } else {
-                        $("#btnRecom").html("<i class='fas fa-thumbs-up' style='color: blue;'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    Swal.fire({
-                        title: "오류",
-                        text: "서버 응답 오류가 발생했습니다. 관리자에게 문의하세요.",
-                        icon: "error",
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "확인"
-                    });
-                }
-            });
-            <% } %>
-            
-			$("#btnWriteTop").on("click", function() {
-				if($.trim($("#_freeBbsComContent").val()).length === 0) {
-                    Swal.fire({
-                        title: "댓글 내용을 입력해주세요",
-                        icon: "warning",
-                        confirmButtonColor: "#3085d6",
-                        confirmButtonText: "확인"
-                    });
-                    return;
-				}
-				
-				$("#freeBbsComContent").val($("#_freeBbsComContent").val());
-		        document.bbsForm.action = "/bbs/freeWriteTopCom.jsp";
-		        document.bbsForm.submit();
-			});
+	            $.ajax({
+	                type: "POST",
+	                url: "/bbs/recomCheckInitAjax.jsp",
+	                data: {
+	                    userId: "<%= cookieUserId %>",
+	                    freeBbsSeq: <%= freeBbsSeq %>
+	                },
+	                dataType: "JSON",
+	                success: function(obj) {
+	                    if (obj.flag) {
+	                        $("#btnRecom").html("<i class='fas fa-thumbs-up'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
+	                    } else {
+	                        $("#btnRecom").html("<i class='fas fa-thumbs-up' style='color: blue;'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>");
+	                    }
+	                },
+	                error: function(xhr, status, error) {
+	                    Swal.fire({
+	                        title: "오류",
+	                        text: "서버 응답 오류가 발생했습니다. 관리자에게 문의하세요.",
+	                        icon: "error",
+	                        confirmButtonColor: "#3085d6",
+	                        confirmButtonText: "확인"
+	                    });
+	                }
+	            });
+	     
+				$("#btnWriteTop").on("click", function() {
+					if($.trim($("#_freeBbsComContent").val()).length === 0) {
+	                    Swal.fire({
+	                        title: "댓글 내용을 입력해주세요",
+	                        icon: "warning",
+	                        confirmButtonColor: "#3085d6",
+	                        confirmButtonText: "확인"
+	                    });
+	                    return;
+					}
+					
+					var content = $("#_freeBbsComContent").val();
+					$("#freeBbsComContent").val(content);
+			        document.bbsForm.action = "/bbs/freeWriteTopCom.jsp";
+			        document.bbsForm.submit();
+				});		
+<% 			
+			} 
+%>
 
             $("#btnList").on("click", function() {
                 document.bbsForm.action = "/bbs/freeList.jsp";
@@ -191,8 +196,8 @@ if (freeBbsSeq == 0L) {
 
                 $("#btnDelete").on("click", function() {
                     Swal.fire({
-                        title: "게시글을 수정하시겠습니까?",
-                        icon: "success",
+                        title: "게시글을 삭제하시겠습니까?",
+                        icon: "warning",
                         showCancelButton: true,
                         cancelButtonColor: "#3f51b5",
                         confirmButtonColor: "#3085d6",
@@ -201,7 +206,8 @@ if (freeBbsSeq == 0L) {
                         reverseButtons: true,
                     }).then(result => {
                         if (result.isConfirmed) {
-                            document.updateForm.submit();
+                            document.bbsForm.action = "/bbs/freeDelete.jsp";
+                            document.bbsForm.submit();
                         }
                     });
                 });
@@ -217,63 +223,100 @@ if (freeBbsSeq == 0L) {
         document.bbsForm.submit();
     }
     
-    function replyCom(freeBbsComSeq) {
-    	
-    	
-    	
-    }
-    
-    function editCom(comSeq, content) {
-        const commentCard = document.querySelector(`.card[data-seq='${comSeq}']`);
-        const contentParagraph = commentCard.querySelector('.card-text');
-        const buttonsContainer = commentCard.querySelector('.d-flex');
-
-        // 텍스트 영역 생성
-        const textarea = document.createElement('textarea');
-        textarea.className = 'form-control';
-        textarea.rows = 3;
-        textarea.value = content;
-
-        // 기존 콘텐츠를 텍스트 영역으로 교체
-        contentParagraph.replaceWith(textarea);
-
-        // 수정 취소 버튼 생성
-        const cancelButton = document.createElement('button');
-        cancelButton.type = 'button';
-        cancelButton.className = 'btn btn-outline-secondary btn-sm me-2';
-        cancelButton.textContent = '수정 취소';
-        cancelButton.onclick = function() {
-            textarea.replaceWith(contentParagraph); // 기존 내용으로 복구
-            cancelButton.remove(); // 취소 버튼 제거
-            saveButton.remove(); // 저장 버튼 제거
-        };
-
-        // 수정 저장 버튼 생성
-        const saveButton = document.createElement('button');
-        saveButton.type = 'button';
-        saveButton.className = 'btn btn-primary btn-sm';
-        saveButton.textContent = '수정 저장';
-        saveButton.onclick = function() {
-            const newContent = textarea.value;
-
-            // hidden 필드에 수정할 댓글 내용 설정
-            document.getElementById('freeBbsComContent').value = newContent; // 히든 필드에 내용 설정
-            document.getElementById('freeBbsComSeq').value = comSeq; // 댓글 시퀀스 설정
-
-            // 폼 제출
-            document.bbsForm.action = '/path/to/update/comment'; // 실제 URL로 수정
-            document.bbsForm.submit();
-        };
-
-        // 버튼을 추가
-        buttonsContainer.appendChild(saveButton);
-        buttonsContainer.appendChild(cancelButton);
-    }
-
     function deleteCom(freeBbsComSeq) {
     	$("#freeBbsComSeq").val(freeBbsComSeq);
     	document.bbsForm.action = "/bbs/freeDeleteCom.jsp";
     	document.bbsForm.submit();
+    }
+    
+    function editCom(freeBbsComSeq, freeBbsComContent) {
+    	const $commentCard = $(".card[data-seq='" + freeBbsComSeq + "']");
+    	const $contentParagraph = $commentCard.find(".card-text").first();
+    	const $buttonsContainer = $commentCard.find(".d-flex");
+    	const $existingButtons = $buttonsContainer.find("button").hide();
+    	
+        const $textarea = $("<textarea>", {
+            class: "form-control",
+            rows: 3
+        }).val(freeBbsComContent); 
+        $contentParagraph.replaceWith($textarea);
+
+        const $cancelButton = $("<button>", {
+            type: "button",
+            class: "btn btn-outline-light btn-sm me-2",
+            text: "수정 취소",
+            click: function() {
+                $textarea.replaceWith($contentParagraph); 
+                $cancelButton.remove(); 
+                $saveButton.remove(); 
+                $existingButtons.show();
+            }
+        });
+        
+        const $saveButton = $("<button>", {
+            type: "button",
+            class: "btn btn-outline-light btn-sm me-2",
+            text: "수정 저장",
+            click: function() {
+                const newContent = $textarea.val();
+                $("#freeBbsComContent").val(newContent); 
+                $("#freeBbsComSeq").val(freeBbsComSeq); 
+
+                $("form[name='bbsForm']").attr("action", "/bbs/freeUpdateCom.jsp"); 
+                $("form[name='bbsForm']").submit();
+            }
+        });
+
+        $buttonsContainer.append($saveButton);
+        $buttonsContainer.append($cancelButton);
+    }
+    
+    function replyCom(freeBbsComSeq) {
+        const $commentDiv = $("div[data-seq='" + freeBbsComSeq + "']");
+        if ($commentDiv.find(".reply-form").length > 0) {
+            return;
+        }
+
+        const replyFormHTML = 
+            '<div class="reply-form mt-2">' +
+                '<textarea class="form-control" name="replyContent" rows="2" placeholder="답글을 작성하세요"></textarea>' +
+                '<div class="text-end mt-2">' +  
+                    '<button type="button" class="btn btn-outline-light btn-sm me-2" onclick="submitReply(' + freeBbsComSeq + ')">작성</button>' +
+                    '<button type="button" class="btn btn-outline-light btn-sm me-2" onclick="cancelReply(this)">취소</button>' +
+                '</div>' +
+            '</div>';
+
+
+        $commentDiv.append(replyFormHTML);
+    }
+
+    function submitReply(freeBbsComSeq) {
+        const $commentDiv = $("div[data-seq='" + freeBbsComSeq + "']");
+        const replyContent = $commentDiv.find("textarea[name='replyContent']").val();
+
+        if (replyContent.trim().length === 0) {
+            Swal.fire({
+                title: "오류",
+                text: "답글을 작성하세요",
+                icon: "warning",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "확인"
+            });
+            return;
+        }
+
+        $("#freeBbsComContent").val(replyContent);
+        $("#freeBbsComSeq").val(freeBbsComSeq);
+
+        document.bbsForm.action = "/bbs/freeWriteSubCom.jsp";
+        document.bbsForm.submit();
+    }
+
+    function cancelReply(button) {
+        const $replyForm = $(button).closest(".reply-form");
+        if ($replyForm.length) {
+            $replyForm.remove(); 
+        }
     }
 </script>
 <body>
@@ -307,6 +350,7 @@ if (freeBbsSeq == 0L) {
         </table>
     </div>
 
+
     <!-- 추천 박스 -->
     <div class="d-flex justify-content-center align-items-center my-3">
         <!-- 추천 버튼 -->
@@ -314,6 +358,16 @@ if (freeBbsSeq == 0L) {
             <i class='fas fa-thumbs-up'></i> 추천 <%= freeBbs.getFreeBbsRecomCnt() %>
         </button>
     </div>
+    
+    <!-- 버튼 박스 -->
+	<div class="d-flex justify-content-end my-3">
+	    <button type="button" id="btnList" class="btn btn-secondary me-2">리스트</button>
+	    <% if(StringUtil.equals(cookieUserId, freeBbs.getUserId())) { %>
+	        <button type="button" id="btnUpdate" class="btn btn-secondary me-2">수정</button>
+	        <button type="button" id="btnDelete" class="btn btn-secondary">삭제</button>
+	    <% } %>
+	</div>
+    
     <!-- 댓글 섹션 -->
     <hr>
     <div class="comments-section mt-4">
@@ -323,44 +377,44 @@ if (freeBbsSeq == 0L) {
 		<% } %>
         </h5>
         <!-- 댓글 목록 -->
-        <div id="commentsContainer">
+        
 <% 
-			if (list != null && list.size() > 0) {
-				Iterator<FreeBbsCom> iterator = list.iterator();
-				while(iterator.hasNext()) {
-					FreeBbsCom freeBbsCom = iterator.next();
-%>
-	            	<div class="card mb-3" style="margin-left: <%= freeBbsCom.getReLevel() * 20 %>px;">
-	                	<div class="card-body">
+		if (list != null && list.size() > 0) {
+			Iterator<FreeBbsCom> iterator = list.iterator();
+			while(iterator.hasNext()) {
+				FreeBbsCom freeBbsCom = iterator.next();
+%>		
+				<div class="position-relative mb-3" style="margin-left: <%= freeBbsCom.getReLevel() * 40 %>px;">
+			    <% if (freeBbsCom.getReLevel() != 0) { %> 
+			        <i class="fa-solid fa-arrow-right fa-xl" style="position: absolute; top: 50%; left: -30px; transform: translateY(-50%);"></i>
+			    <% } %>
+				    <div class="card" data-seq="<%= freeBbsCom.getFreeBbsComSeq() %>">
+				        <div class="card-body">
+				            <% if (StringUtil.equals(freeBbsCom.getFreeBbsComStatus(), "N")) { %>
+				                <h6 class="card-title">삭제된 댓글입니다.</h6>
+				            <% } else { %>
+				                <h6 class="card-title">댓글 작성자: <%= freeBbsCom.getUserName() %></h6>
+				                <p class="card-text"><%= StringUtil.replace(freeBbsCom.getFreeBbsComContent(), "\n", "<br>") %></p>
+				                <p class="card-text">
+				                    <small class="text-muted"><%= freeBbsCom.getRegDate() %></small>
+				                </p>
+				                <div class="d-flex justify-content-end mt-2">
+				                    <% if (!StringUtil.isEmpty(cookieUserId)) { %>
+				                        <button type="button" class="btn btn-outline-light btn-sm me-2" onclick="replyCom(<%= freeBbsCom.getFreeBbsComSeq() %>)">답글</button>
+				                    <% } %>
+				                    <% if (StringUtil.equals(cookieUserId, freeBbsCom.getUserId())) { %>
+				                        <button type="button" class="btn btn-outline-light btn-sm me-2" onclick="editCom(<%= freeBbsCom.getFreeBbsComSeq() %>, 
+				                        '<%= StringUtil.replace(StringUtil.replace(StringUtil.replace(freeBbsCom.getFreeBbsComContent(), "'", "\\'"), "\n", "\\n"), "\r", "\\r") %>')">수정</button>
+				                        <button type="button" class="btn btn-outline-danger btn-sm me-2" onclick="deleteCom(<%= freeBbsCom.getFreeBbsComSeq() %>)">삭제</button>
+				                    <% } %>
+				                </div>
+				            <% } %>
+				        </div>
+				    </div>
+				</div>
+				
 <%
-						if (StringUtil.equals(freeBbsCom.getFreeBbsComStatus(), "N")) {
-%>
-							<h6 class="card-title">삭제된 댓글입니다.</h6>
-<%
-						} else {
-%>
-	                    	<h6 class="card-title">댓글 작성자: <%= freeBbsCom.getUserName() %></h6>
-	                    	<p class="card-text"><%= freeBbsCom.getFreeBbsComContent() %></p>
-	                    	<p class="card-text">
-	                        	<small class="text-muted"><%= freeBbsCom.getRegDate() %></small>
-	                    	</p>
-	                    	<div class="d-flex justify-content-end mt-2">
-	                    		<button type="button" class="btn btn-outline-light btn-sm me-2" onclick="replyCom(<%= freeBbsCom.getFreeBbsComSeq() %>)">답글</button>
-<%
-								if (StringUtil.equals(cookieUserId, freeBbsCom.getUserId())) {
-%>
-									<button type="button" class="btn btn-outline-light btn-sm me-2" onclick="editCom(<%= freeBbsCom.getFreeBbsComSeq() %>, '<%= freeBbsCom.getFreeBbsComContent() %>')">수정</button>
-						        	<button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteCom(<%= freeBbsCom.getFreeBbsComSeq() %>)">삭제</button>
-<%
-								}
-						}
-%>
-							</div>
-            			</div>
-        			</div>
-		</div>    
-<%
-				}
+			}
 		} 
 %>
 		<!-- 댓글 페이징 처리 -->

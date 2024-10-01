@@ -44,7 +44,7 @@ public class FreeBbsComDao {
 				.append("FROM FREE_BBS_COM A, USERS B ")
 				.append("WHERE FREE_BBS_SEQ = ? AND ")
 				.append("A.USER_ID = B.USER_ID ")
-				.append("ORDER BY REF, RE_STEP ")
+				.append("ORDER BY REF, REG_DATE, RE_STEP")
 			.append(") ")
 		.append(") ")
 		.append("WHERE NUM BETWEEN ? AND ?"); 

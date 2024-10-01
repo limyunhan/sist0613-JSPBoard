@@ -8,8 +8,8 @@
 Logger logger = LogManager.getLogger("freeWrite.jsp");
 HttpUtil.requestLogString(request, logger);
 
-String freeBbsTitle = StringUtil.nvl(HttpUtil.get(request, "freeBbsTitle"));
-String freeBbsContent = StringUtil.nvl(HttpUtil.get(request, "freeBbsContent"));
+String freeBbsTitle = HttpUtil.get(request, "freeBbsTitle", "");
+String freeBbsContent = HttpUtil.get(request, "freeBbsContent", "");
 %>
 <!DOCTYPE html>
 <html>
@@ -62,6 +62,27 @@ String freeBbsContent = StringUtil.nvl(HttpUtil.get(request, "freeBbsContent"));
 	    	],
 	    	fontNames: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'],
 	    	fontNamesIgnoreCheck: ['GmarketSans', 'Nanum Gothic', 'Noto Sans KR', 'Spoqa Han Sans'], 
+	    	callbacks: {
+	    		onImageUpload : function(files, editor, welEditable) {
+	    			for(var i = files.length - 1; i > = 0; i--) {
+	    				if(files[i].size > 1024 * 1024 * 5) {
+	    					Swal.fire({
+	    						title:"파일 크기는 5MB 이하여야 합니다.",
+	    						icon: "warning",
+	    	    			 	showCancelButton: true,
+	    					    showConfirmButton: false,
+	    					    cancelButtonColor: "#3085d6",
+	    					    cancelButtonText: "확인"
+	    					});
+	    					return;
+	    				}
+	    			}
+	    		}
+	    		
+	    	}
+
+	    	
+	    	
 		});
 		
 		$("#btnWrite").on("click", function() {

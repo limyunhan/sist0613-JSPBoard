@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.sist.web.model.FreeBbs"%>
+<%@ page import="org.apache.logging.log4j.LogManager"%>
+<%@ page import="org.apache.logging.log4j.Logger"%>
+<%@ page import="com.sist.web.util.HttpUtil"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="com.sist.web.dao.FreeBbsDao"%>
@@ -8,16 +11,27 @@
 <head>
 <%@ include file="/include/header.jsp" %>
 <%
-	String openLoginModal = (String)session.getAttribute("openLoginModal");
-	session.removeAttribute("openLoginModal");
-	
-	List<FreeBbs> list = null;
-	FreeBbs search = new FreeBbs();
-	search.setStartPost(1);
-	search.setEndPost(5);
-	
-	FreeBbsDao freeBbsDao = new FreeBbsDao();
-	list = freeBbsDao.freeBbsList(search);
+Logger logger = LogManager.getLogger("index.jsp");
+HttpUtil.requestLogString(request, logger);
+
+String openLoginModal = (String)session.getAttribute("openLoginModal");
+session.removeAttribute("openLoginModal");
+
+List<FreeBbs> list = null;
+FreeBbs search = new FreeBbs();
+search.setStartPost(1);
+search.setEndPost(5);
+
+FreeBbsDao freeBbsDao = new FreeBbsDao();
+list = freeBbsDao.freeBbsList(search);
+
+List<FreeBbs> popularList = null;
+FreeBbs popularFreeBbs = new FreeBbs();
+popularFreeBbs.setStartPost(1);
+popularFreeBbs.setEndPost(5);
+popularList = freeBbsDao.popularFreeBbsList(popularFreeBbs);
+
+logger.debug("popularList size() : " + popularList.size());
 %>
 <script>
 	$(document).ready(function(){
@@ -94,12 +108,25 @@
         <!-- 인기 게시물 카드 -->
         <div class="col-md-12 mb-3">
             <div class="card bg-light mb-3">
-                <div class="card-header"><h2><i class="fa-solid fa-fire"></i> 인기 게시물</h2></div>
+                <div class="card-header"><h2><i class="fa-solid fa-fire"></i> 최근 7일동안의 인기 게시물</h2></div>
                 <div class="card-body">
                     <ul>
-                        <li><a href="#">가장 인기 있는 게시물 제목 1</a></li>
-                        <li><a href="#">가장 인기 있는 게시물 제목 2</a></li>
-                        <li><a href="#">가장 인기 있는 게시물 제목 3</a></li>
+<%
+					if (popularList != null && popularList.size() > 0) {
+						Iterator<FreeBbs> iterator = popularList.iterator();
+						while(iterator.hasNext()) {
+							FreeBbs freeBbs = iterator.next();
+%>
+							<li><a href="javascript:void(0)" onclick="view(<%= freeBbs.getFreeBbsSeq() %>)"><%= freeBbs.getFreeBbsTitle() %></a></li>
+<%
+
+						}
+					} else {
+%>
+						<li><a href="javascript:void(0)">해당 데이터가 존재하지 않습니다.</a></li>
+<% 
+					}
+%>
                     </ul>
                 </div>
             </div>
@@ -123,7 +150,7 @@
                             </thead>
                             <tbody>
 <%
-                        if(list != null && list.size() > 0) {
+                        if (list != null && list.size() > 0) {
                         	Iterator<FreeBbs> iterator = list.iterator();
                             while(iterator.hasNext()) {
                                 FreeBbs freeBbs = iterator.next();
@@ -134,8 +161,8 @@
                                     	<a href="javascript:void(0)" onclick="view(<%= freeBbs.getFreeBbsSeq() %>)"><%= freeBbs.getFreeBbsTitle() %>
                                     	<% if (freeBbs.getFreeBbsComCnt() != 0) { %>
                                     	(<span style="color: blue;"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsComCnt()) %></span>)
-                                    	</a>
                                     	<% } %>
+                                    	</a>
                                     </td>
                                     <td class="text-center"><%= freeBbs.getUserName() %></td>
                                     <td class="text-center"><%= StringUtil.toNumberFormat(freeBbs.getFreeBbsReadCnt()) %></td>

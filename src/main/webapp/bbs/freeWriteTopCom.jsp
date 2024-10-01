@@ -17,10 +17,11 @@ String searchValue = HttpUtil.get(request, "searchValue", "");
 long curPage = HttpUtil.get(request, "curPage", 1L);
 long curComPage = HttpUtil.get(request, "curComPage", 1L);
 String freeBbsComContent = HttpUtil.get(request, "freeBbsComContent", "");
-
 String msg = "";
 String icon = "";
 boolean flag = true;
+
+session.setAttribute("previousPage", request.getRequestURI());
 
 if (freeBbsSeq > 0 && !StringUtil.isEmpty(freeBbsComContent)) {
 	FreeBbsComDao freeBbsComDao = new FreeBbsComDao();
@@ -46,25 +47,28 @@ if (freeBbsSeq > 0 && !StringUtil.isEmpty(freeBbsComContent)) {
 <head> 
 <%@ include file="/include/header.jsp"%>
 <script>
-    $(document).ready(function(){
+	$(document).ready(function(){
 <%
-		if(flag) {
+    if(flag) {
 %>
-			Swal.fire({
-				title: "<%=msg%>",
-				icon: "<%=icon%>",
-				confirmButtonColor: "#3085d6",
-				confirmButtonText: "확인",
-			}).then(result => {
-	            if (result.isConfirmed) {        
-	                document.bbsForm.submit();
-	            }
-	        });
+        	Swal.fire({
+            	title: "<%=msg%>",
+            	icon: "<%=icon%>",
+            	confirmButtonColor: "#3085d6",
+            	confirmButtonText: "확인",
+        	}).then(result => {
+            	if (result.isConfirmed) {        
+                	document.bbsForm.submit();  // 확인 버튼을 누른 후에만 제출
+            	}
+        	});
 <%
-		}
+    	} else {
 %>
-		document.bbsForm.submit();
-    });
+        	document.bbsForm.submit();  // 경고창이 필요 없을 때는 바로 제출
+<%
+    	}
+%>
+	});
 </script>
 </head>
 <body>

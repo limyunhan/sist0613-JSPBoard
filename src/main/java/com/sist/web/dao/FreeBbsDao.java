@@ -113,6 +113,79 @@ public class FreeBbsDao {
 		return list;
 	}
 	
+	// 자유 게시글중 최근 7일 내에 추천과 댓글이 많이 달린 인기 게시글 5개 조회
+	// 정렬순서 : 최근 7일 이내의 추천수, 댓글 수, 그리고 게시글의 조회수(조회수는 전체기간 반영임), BBS_SEQ 값 DESC 순
+	public List<FreeBbs> popularFreeBbsList(FreeBbs popularFreeBbs) {
+		List<FreeBbs> popularList = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_COM_CNT, REG_DATE, USER_NAME ")
+		.append(" FROM ( ")
+		    .append("SELECT FREE_BBS_SEQ, USER_ID, FREE_BBS_TITLE, FREE_BBS_CONTENT, FREE_BBS_READ_CNT, FREE_BBS_RECOM_CNT, FREE_BBS_COM_CNT, REG_DATE, USER_NAME ")
+		    .append("FROM ( ")
+		        .append("SELECT ")
+		            .append("A.FREE_BBS_SEQ FREE_BBS_SEQ, ")
+		            .append("A.USER_ID USER_ID, ")
+		            .append("NVL(A.FREE_BBS_TITLE, '') FREE_BBS_TITLE, ")
+		            .append("NVL(A.FREE_BBS_CONTENT, '') FREE_BBS_CONTENT, ")
+		            .append("NVL(A.FREE_BBS_READ_CNT, 0) FREE_BBS_READ_CNT, ")
+		            .append("NVL(RC.CNT, 0) FREE_BBS_RECOM_CNT, ")
+		            .append("NVL(C.CNT, 0) FREE_BBS_COM_CNT, ")
+		            .append("NVL(TO_CHAR(A.REG_DATE, 'YYYY-MM-DD HH24:MI:SS'), '') REG_DATE, ")
+		            .append("NVL(B.USER_NAME, '') USER_NAME ")
+		        .append("FROM ")
+		            .append("FREE_BBS A, USERS B, ")
+		            .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_SEQ) CNT ")
+		            .append("FROM (SELECT * FROM FREE_BBS_RECOM WHERE RECOM_DATE BETWEEN SYSDATE - 7 AND SYSDATE) ")
+		            .append("GROUP BY FREE_BBS_SEQ) RC, ")
+		            .append("(SELECT FREE_BBS_SEQ, COUNT(FREE_BBS_COM_SEQ) CNT ")
+		            .append("FROM (SELECT * FROM FREE_BBS_COM WHERE FREE_BBS_COM_STATUS <> 'N' AND REG_DATE BETWEEN SYSDATE - 7 AND SYSDATE) ")
+		            .append("GROUP BY FREE_BBS_SEQ) C ")
+		        .append("WHERE A.FREE_BBS_STATUS <> 'N' AND ")
+		            .append("A.FREE_BBS_SEQ = RC.FREE_BBS_SEQ(+) AND ")
+		            .append("A.FREE_BBS_SEQ = C.FREE_BBS_SEQ(+) AND ")
+		            .append("A.USER_ID = B.USER_ID ") 
+		    .append(") ") 
+		    .append("ORDER BY FREE_BBS_RECOM_CNT DESC, FREE_BBS_COM_CNT DESC, FREE_BBS_READ_CNT DESC, FREE_BBS_SEQ DESC ")
+		.append(") ")
+		.append("WHERE ROWNUM BETWEEN ? AND ?");
+		
+		try {
+			conn = DBManager.getConnection();
+			ps = conn.prepareStatement(sb.toString());
+			
+			int idx = 0;
+			ps.setLong(++idx, popularFreeBbs.getStartPost());
+			ps.setLong(++idx, popularFreeBbs.getEndPost());
+			rs = ps.executeQuery();
+
+	        while (rs.next()) {
+	            FreeBbs freeBbs = new FreeBbs();
+	            freeBbs.setFreeBbsSeq(rs.getLong("FREE_BBS_SEQ"));
+	            freeBbs.setUserId(rs.getString("USER_ID"));
+	            freeBbs.setFreeBbsTitle(rs.getString("FREE_BBS_TITLE"));
+	            freeBbs.setFreeBbsContent(rs.getString("FREE_BBS_CONTENT"));
+	            freeBbs.setFreeBbsReadCnt(rs.getInt("FREE_BBS_READ_CNT"));
+	            freeBbs.setFreeBbsRecomCnt(rs.getInt("FREE_BBS_RECOM_CNT"));
+	            freeBbs.setFreeBbsComCnt(rs.getInt("FREE_BBS_COM_CNT"));
+	            freeBbs.setFreeBbsStatus("Y");
+	            freeBbs.setRegDate(rs.getString("REG_DATE"));
+	            freeBbs.setUserName(rs.getString("USER_NAME"));
+	            popularList.add(freeBbs);
+	        }
+			
+		} catch (SQLException e) {
+			logger.error("[FreeBbsDao]popularFreeBbsList SQLException", e);
+		} finally {
+			DBManager.close(rs, ps, conn);
+		}
+		
+		return popularList;
+	}
+	
 	// 페이징 처리를 위한 전체 게시글 수 조회 후 반환(검색 조건 반영)
 	public long freeBbsTotalPost(FreeBbs search) {
 		long totalPost = 0;
@@ -330,7 +403,7 @@ public class FreeBbsDao {
 		
 		return (cnt == 1);
 	}
-	
+
 	// 자유 게시글 수정 2 : 조회수 가져오기
 	public int getFreeBbsReadCnt(long freeBbsSeq) {
 		Connection conn = null;
